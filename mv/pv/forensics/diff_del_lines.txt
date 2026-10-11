@@ -1,0 +1,21 @@
+$ git log --diff-filter=D --format='%h %s' --name-only | grep -v '^$' | head -20
+a57d2ba fix(P0 评审整改): 空下拉 SIGFPE + 幽灵 API + CI 结构性失败 + 二进制入库
+your_app/libfxtk.so
+your_app/libfxtk_sokol.so
+your_app/your_app
+5638359 revert(your_app): 回退 Makefile 到已知可用版本, 删除半成品 Makefile.common
+demo-main/Makefile.common
+531fb44 fix(your_app/Makefile): 删除上一提交遗留的孤立续行(CORE 定义已移入 Makefile.common) —— 该提交把 your_app 的 make 改坏了, 已修复并重建验证
+your_app/your_app
+043175e chore(轻量化): 删 2 个未引用的 sokol 头(sokol_fetch/sokol_time); 演示动画改为默认关(用户实测开启后不如以前利落); CFLAGS 加 -DNDEBUG(实测 0KB 变化, sokol 校验层不由它控制)
+third_party/sokol/sokol_fetch.h
+third_party/sokol/sokol_time.h
+a6c1433 chore: 不再跟踪编译产物(2 个 ELF 二进制, 1.6MB) + 补齐 .gitignore —— 为推 GitHub 做清理
+demo-main/fxtk_sim_dbg
+demo-main/fxtk_sim_sdl
+03c750e refactor(v2.4.3): 核心切断平台日志依赖(改用 fx_log, 删除 PC 垫片 esp_log.h) + 并发槽位可配置(8→32, 池满明确告警); README 增'设计取向'章节(实测数字)
+demo-main/esp_log.h
+ee322ac 删除 README.md
+docs/design/README.md
+c343583 Delete AI_CONTRIBUTERS.md
+AI_CONTRIBUTERS.md

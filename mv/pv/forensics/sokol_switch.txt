@@ -1,0 +1,5 @@
+$ git show -s --format='%h %ad %s' --date=short 33b7136 6d81e01 9a633b3 34e9f29
+33b7136 2026-09-12 P2.1+P2.2: sokol 后端打通 (与 SDL 像素级对照 <1%)
+6d81e01 2026-09-13 feat: sokol 转为默认后端(SDL2 降为遗留) + 粒子页 40MB 常驻内存改为按需分配
+9a633b3 2026-09-13 feat(P6)+fix: Windows 单 exe 无 DLL 达标(sokol/GLCORE) + 修伪3D场景周期性变空
+34e9f29 2026-09-13 feat(sokol 裁剪): 中文输入法打通 —— 补齐 XIM(setlocale+modifiers+XIC)并在事件循环里加 XFilterEvent

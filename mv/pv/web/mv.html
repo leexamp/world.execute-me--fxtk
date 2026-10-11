@@ -1,0 +1,1562 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<title>[她实现了自己的世界] world.execute(me); · token ID: flash-0731=DeepSeek-V4 共享词表 (AndersonBY/deepseek-tokenizer @525044c), v4.1-flash 暂用 DeepSeek-V3 替身</title>
+<style>
+  html,body{margin:0;padding:0;background:#000;overflow:hidden}
+  :root{
+    --bg:#07080a; --panel:#0b0d10; --line:#1b1f24; --txt:#c9d1d9; --dim:#6e7681;
+    --grn:#7ee787; --red:#ff5f56; --yel:#ffd866; --blu:#79c0ff; --pur:#d2a8ff; --wht:#ffffff;
+  }
+  #stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--bg);
+    font-family:"DejaVu Sans Mono","WenQuanYi Micro Hei Mono","WenQuanYi Zen Hei",monospace;
+    color:var(--txt);font-variant-ligatures:none}
+  /* ================= 桌面层（开场 0-7s，完全照 1.heic 的位置） ================= */
+  #desk{position:absolute;inset:0;z-index:90}
+  #wall{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  #d-top{position:absolute;left:0;top:0;width:100%;height:28px;background:rgba(20,16,22,.88);color:#fff;z-index:95;
+     display:flex;align-items:center;font:600 13.5px "WenQuanYi Micro Hei",sans-serif}
+  #d-top .l{display:flex;gap:20px;padding-left:16px}
+  #d-top .r{margin-left:auto;padding-right:16px}
+  #d-oc{position:absolute;left:0;top:96px;width:775px;height:694px;background:#fff;border-radius:10px;
+     box-shadow:0 22px 60px rgba(0,0,0,.55);color:#202124;font-family:"WenQuanYi Micro Hei",sans-serif;overflow:hidden}
+  #d-oc .tb{height:38px;background:linear-gradient(#fbfbfc,#f1f2f4);border-bottom:1px solid #e3e4e8;text-align:center;
+     font:600 13px/38px "WenQuanYi Micro Hei",sans-serif;color:#3c4043}
+  #d-oc .tabs{height:44px;background:#f5f5f7;border-bottom:1px solid #e3e4e8;display:flex;gap:8px;align-items:center;padding:0 10px;font-size:12.5px}
+  #d-oc .tabs i{font-style:normal;background:#fff;border:1px solid #e1e2e6;border-radius:8px;padding:6px 10px;color:#3c4043}
+  #d-oc .bd{padding:14px 18px;font-size:13.5px;line-height:1.7;color:#26292e}
+  #d-oc .bd b{font-weight:800}
+  #d-oc .tb2{position:absolute;right:12px;top:6px;display:flex;align-items:center;gap:8px;font-size:12px;color:#5f6368}
+  #oc-ring{width:22px;height:22px;transform:rotate(-90deg)}
+  #wq{display:flex;align-items:center;gap:9px;color:#8b949e}
+  #wq svg{transform:rotate(-90deg)}
+  #wq .q{font-size:13px;color:#8b949e} #wq .q b{color:#c9d1d9;font-weight:700}
+  #d-term{position:absolute;left:870px;top:400px;width:900px;height:680px;background:#300a24;border-radius:8px;
+     box-shadow:0 22px 60px rgba(0,0,0,.6);overflow:hidden}
+  #d-term .tb{height:34px;background:linear-gradient(#3c3c3c,#333);color:#e6e6e6;font-size:12.5px;line-height:34px;text-align:center}
+  #d-term .bd{padding:12px 14px;font-size:15px;line-height:1.45;color:#e8e8e8;white-space:pre-wrap}
+  /* ================= 常驻 chrome ================= */
+  #top{position:absolute;left:0;top:0;width:100%;height:30px;display:flex;align-items:center;z-index:60;
+     background:linear-gradient(#0a0c0f,#080a0c);border-bottom:1px solid var(--line);font-size:14.5px}
+  #top .l{padding-left:20px}
+  #top .r{margin-left:auto;padding-right:22px;color:#8b949e}
+  .grn{color:var(--grn)} .red{color:var(--red)} .yel{color:var(--yel)} .blu{color:var(--blu)} .pur{color:var(--pur)}
+  .dim{color:var(--dim)} .wht{color:var(--wht)}
+  .b{font-weight:700}
+  /* 日志区 */
+  #logzone{position:absolute;left:0;top:30px;width:100%;height:216px;display:flex;z-index:40;overflow:hidden}
+  /* 左上两块流: git 历史流(慢, 1.9s 一条) 在上, 终端流(刷屏) 在下; 各自 overflow:hidden + 内层 translateY 贴底 */
+  #logcol{width:56%;display:flex;flex-direction:column;overflow:hidden}
+  #gitfeed{height:95px;overflow:hidden;position:relative;background:#08090b;border-bottom:1px solid var(--line)}
+  #gitin{position:absolute;left:0;right:0;top:0;padding:5px 0 0 20px;font-size:15px;line-height:1.5;white-space:pre;color:#8b949e}
+  #gitin>div:last-child{color:#e6edf3;font-weight:700}
+  #log{flex:1;overflow:hidden;position:relative}
+  #login{position:absolute;left:0;right:0;top:0;padding:3px 0 0 20px;font-size:13.5px;line-height:1.3;white-space:pre;color:#a9b1ba}
+  #log .ok,#gitfeed .ok{color:var(--grn)} #log .wn,#gitfeed .wn{color:var(--yel)} #log .er,#gitfeed .er{color:var(--red)}
+  #artbox{flex:1;position:relative;overflow:hidden}
+  #art{position:absolute;left:0;top:0;white-space:pre;color:#8b949e;line-height:1;letter-spacing:0}
+  /* 歌词 token 带 */
+  #ribbon{position:absolute;left:0;top:246px;width:100%;height:96px;z-index:55;background:#08090b;
+     border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden}
+  #ribbon .hdr{position:absolute;left:22px;top:4px;font-size:13px;color:#5b636d}
+  #ribbon .corner{position:absolute;color:#39414a;font-size:15px}
+  #rb-words{position:absolute;left:56px;top:20px;font-size:42px;line-height:1;white-space:nowrap}
+  #rb-words .cell{display:inline-flex;flex-direction:column;align-items:center;margin-right:15px;vertical-align:top}
+  #rb-words .tk{display:flex;justify-content:center;gap:4px;font-size:10px;line-height:1;margin-top:6px;
+     color:#79828d;font-family:"DejaVu Sans Mono",monospace;letter-spacing:-0.02em;white-space:nowrap}
+  #rb-words .tk i{font-style:normal}
+  /* .w 不再带 margin-right: 间距统一由 .cell 出, 否则 align-items:center 会把词箱整体左移, 数字与词串位 */
+  #rb-words .w{display:inline-block;background:#15181d;border:1px solid #22272e;border-radius:3px;
+     padding:4px 11px 6px 11px;color:#fff;font-weight:700}
+  #rb-words .w.cur{background:#e9edf2;color:#0b0d10}
+  #rb-words .car{display:inline-block;width:18px;height:38px;background:#e9edf2;vertical-align:-3px;margin-left:2px}
+  #rb-tok{position:absolute;left:60px;top:74px;font-size:15px;color:#79828d;white-space:nowrap}
+  #rb-tok span{display:inline-block;text-align:right;margin-right:26px}
+  /* 同一行合计 + tokenizer 标签: 右端 flex 并排(不放进 #rb-tok, 那条每换一句就会被清空重建) */
+  #rb-tkm{position:absolute;right:24px;top:74px;display:flex;align-items:center;gap:8px;white-space:nowrap}
+  #rb-sum{font-size:15px;color:#8b949e;white-space:nowrap;background:#0d1013;border:1px solid #22272e;border-radius:3px;padding:2px 9px}
+  #rb-sum b{color:#ffd866;font-weight:700}
+  #rb-tk{font-size:15px;color:#8b949e;white-space:nowrap;
+     background:#0d1013;border:1px solid #22272e;border-radius:3px;padding:2px 9px}
+  #rb-tk b{color:#79c0ff;font-weight:700} #rb-tk .ar{color:#ffd866;padding:0 3px}
+  #rb-bar{position:absolute;right:24px;top:34px;width:220px;height:22px;border:1px solid #2a2f36;background:#0d1013}
+  #rb-bar i{display:block;height:100%;background:#3a4048}
+  #rb-next{position:absolute;left:60px;top:62px;font-size:19px;color:#4d545c;white-space:nowrap}
+  #rb-tot{position:absolute;right:24px;top:62px;font-size:13px;color:#8b949e;text-align:right;width:260px}
+  /* 主窗口（左对话 / 右画布） */
+  #win{position:absolute;left:24px;top:352px;width:1872px;height:640px;z-index:30;background:var(--panel);
+     border:1px solid #22272e;border-radius:8px;overflow:hidden;box-shadow:0 26px 70px rgba(0,0,0,.6)}
+  #win .wt{height:30px;background:#0e1116;border-bottom:1px solid #22272e;display:flex;align-items:center;
+     font-size:14px;color:#9aa4af;padding:0 14px;gap:22px}
+  #win .wt .t{color:#e6edf3;font-weight:700}
+  #win .wt .st{margin-left:auto;display:flex;gap:22px}
+  #win .wb{position:absolute;left:0;right:0;top:30px;bottom:0;display:flex}
+  #chat-cur{position:absolute;left:16px;bottom:4px;font-size:15px;color:#7ee787;z-index:5}
+  #chatpane{width:612px;border-right:1px solid #1b1f24;position:relative;overflow:hidden;background:#0a0c0f}
+  #chat{position:absolute;left:0;right:0;top:0;padding:10px 16px 0 16px;will-change:transform;font-size:14.5px;line-height:1.6}
+  .m{margin:0 0 9px 0;color:#c9d1d9;white-space:pre-wrap;word-break:break-word}
+  .m.u{color:#79c0ff} .m.a{color:#c9d1d9} .m.h{color:#e6edf3;font-weight:700;margin-top:13px}
+  .m.ok{color:#7ee787} .m.wn{color:#ffd866} .m.er{color:#ff7b72} .m.d{color:#6e7681}
+  .m .k{color:#ff7b72} .m .s{color:#a5d6ff} .m .c{color:#8b949e}
+  #canvas-wrap{flex:1;position:relative;overflow:hidden;background:#000}
+  #cv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  #cv.px{image-rendering:pixelated}
+  #rec{position:absolute;left:10px;top:8px;font-size:13px;color:#ff7b72;background:rgba(0,0,0,.55);padding:3px 8px;border-radius:3px;z-index:6}
+  #rec i{display:inline-block;width:9px;height:9px;border-radius:50%;background:#ff2d20;vertical-align:-1px;margin-right:6px}
+  #cv-tag{position:absolute;left:10px;bottom:8px;font-size:13px;color:#7ee787;background:rgba(0,0,0,.6);padding:3px 8px;border-radius:3px}
+  #cv-meta{position:absolute;right:10px;bottom:8px;font-size:13px;color:#8b949e;background:rgba(0,0,0,.6);padding:3px 8px;border-radius:3px}
+  #ticker{position:absolute;right:0;top:0;bottom:0;width:186px;background:#080a0c;border-left:1px solid #1b1f24;
+     padding:8px 10px;font-size:12.5px;line-height:1.85;overflow:hidden;color:#4d545c}
+  #ticker .it{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #ticker .it.on{color:#ff7b72;font-weight:700}
+  #ticker .it.past{color:#7d858e}
+  /* 6 分辨率弹出格 */
+  #grid6{position:absolute;left:660px;top:382px;width:1236px;height:610px;z-index:45;pointer-events:none}
+  .cell6{position:absolute;background:#0c0f13;border:1px solid #2a2f36;border-radius:5px;overflow:hidden;
+     box-shadow:0 12px 34px rgba(0,0,0,.6)}
+  .cell6 img{width:100%;height:100%;object-fit:cover;object-position:top center}
+  .cell6 .lb{position:absolute;left:6px;top:4px;font-size:13px;color:#ff7b72;font-weight:700;background:rgba(0,0,0,.5);padding:1px 6px;border-radius:3px}
+  .cell6 .rs{position:absolute;right:6px;bottom:4px;font-size:12px;color:#8b949e;background:rgba(0,0,0,.5);padding:1px 6px;border-radius:3px}
+  /* 巨幅 ASCII */
+  #big{position:absolute;inset:0;z-index:70;overflow:hidden;display:none}
+  #big pre{position:absolute;left:0;top:0;margin:0;white-space:pre;color:#ff5f56;line-height:1;letter-spacing:0;font-weight:700}
+  /* 底部 */
+  #bottom{position:absolute;left:0;bottom:0;width:100%;height:92px;z-index:75}
+  #sect{position:absolute;left:24px;bottom:30px;font-size:40px;font-weight:700;color:#ff7b72;letter-spacing:1px}
+  #sect .n{color:#8b949e;font-weight:400}
+  #credit{position:absolute;left:26px;bottom:8px;font-size:12.5px;color:#5b636d}
+  #btime{position:absolute;right:24px;bottom:30px;font-size:20px;color:#8b949e}
+  #ruler{position:absolute;left:0;bottom:0;width:100%;height:14px;font-size:11px;color:#2f363d;overflow:hidden;white-space:nowrap}
+#fullwrap{position:absolute;inset:0;z-index:50;opacity:0;pointer-events:none;transition:opacity .4s;overflow:hidden}
+  #fullwrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  #fullwrap img.px{image-rendering:pixelated}
+  #fullwrap .sc{position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,8,10,.86) 0,rgba(7,8,10,.30) 120px,rgba(7,8,10,.16) 300px,rgba(7,8,10,.72) 840px,rgba(7,8,10,.92) 100%)}
+  #fullwrap .lb{position:absolute;right:22px;top:44px;font-size:15px;color:#7ee787;background:rgba(0,0,0,.55);padding:4px 10px;border-radius:3px}
+  #ident{position:absolute;left:0;right:0;top:41%;text-align:center;z-index:78;opacity:0;pointer-events:none}
+  #ident .n{font-size:44px;color:#ff7b72;font-weight:700;vertical-align:26px;margin-right:22px}
+  #ident .t{font-size:118px;font-weight:900;color:#fff;letter-spacing:2px;text-shadow:0 0 60px rgba(0,0,0,.95),0 8px 40px #000}
+  #status{position:absolute;left:0;bottom:74px;width:100%;height:26px;z-index:76;display:flex;align-items:center;
+     background:#0d0f12;border-top:1px solid #1b1f24;border-bottom:1px solid #1b1f24;font-size:13px;color:#8b949e}
+  #status .rb{background:#ff5f56;color:#0b0d10;font-weight:700;padding:2px 10px;height:100%;display:flex;align-items:center;margin-right:16px}
+  #status .seg{padding:0 14px;border-right:1px solid #1b1f24}
+  #status .seg b{color:#c9d1d9;font-weight:700}
+  #status .sp{margin-left:auto;padding-right:18px;color:#7ee787}
+  #lonely{position:absolute;left:0;right:0;top:46%;text-align:center;z-index:79;opacity:0;pointer-events:none;
+     font-size:52px;color:#f0f3f6;letter-spacing:2px}
+  #flash{position:absolute;inset:0;background:#ff2d20;opacity:0;z-index:80;pointer-events:none}
+  #frost{position:absolute;inset:0;background:#000;opacity:0;z-index:85;pointer-events:none}
+  /* ===== 鲸鱼娘拟人化动效层 (Task B): 全部限制在 #canvas-wrap 内, z-index 都 < 6,
+     不遮 #ticker/#cv-tag/#cv-meta; 所有量都是 t 的纯函数, 无 CSS animation/transition ===== */
+  #cv,#cv2{z-index:1}
+  #cglow{position:absolute;inset:-6%;z-index:0;pointer-events:none;opacity:0;
+    background:radial-gradient(closest-side at 50% 54%, rgba(160,230,255,.55), rgba(80,175,235,.20) 46%, rgba(10,40,70,0) 74%)}
+  #cvig{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;
+    background:radial-gradient(ellipse 82% 82% at 50% 48%, rgba(0,0,0,0) 50%, rgba(0,0,0,.46) 100%)}
+  #cparts{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0}
+  #cparts i{position:absolute;left:0;top:0;width:5px;height:5px;border-radius:50%;opacity:0;
+    background:radial-gradient(circle, rgba(225,248,255,.95), rgba(130,205,255,.45) 55%, rgba(130,205,255,0) 72%)}
+  #cfade{position:absolute;inset:0;z-index:4;pointer-events:none;background:#000;opacity:0;display:none}
+  #ticker{z-index:5} #cv-tag,#cv-meta{z-index:6}
+</style></head><body>
+<div id="stage">
+  <!-- 开场桌面 -->
+  <div id="desk">
+    <img id="wall" alt="">
+    <div id="d-top"><span class="l"><span>活动</span><span>位置</span><span>终端</span></span><span class="r" id="d-clock">10月11日 星期日 09:14:39</span></div>
+    <div id="d-oc"><div class="tb">OpenCode<div class="tb2"><span id="d-cost">0 tok - 0%</span><svg id="oc-ring" width="22" height="22"><circle cx="11" cy="11" r="8.5" fill="none" stroke="#e0e1e5" stroke-width="2.4"></circle><circle id="d-arc" cx="11" cy="11" r="8.5" fill="none" stroke="#5f6368" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="53.4" stroke-dashoffset="0"></circle></svg></div></div>
+      <div class="tabs"><i>&#9776;</i><i>&#9638;</i><i>&#9679; linux-sim 主程序代码优化 &times;</i><i style="color:#5f6368">&#9633; esp32-tester重写为fxtk-esp32</i><i style="color:#5f6368">新建会话</i></div>
+      <div class="bd" id="d-chat"></div></div>
+    <div id="d-term"><div class="tb">user@user-laptop-ubuntu: ~</div><div class="bd" id="d-log"></div></div>
+  </div>
+  <!-- 常驻 chrome -->
+  <div id="top"><div class="l"><span class="grn">user@user-laptop-ubuntu</span><span class="dim">:~$</span> <span class="wht b" id="cmd">./world.execute(me);</span></div>
+    <div class="r"><span id="t-time">00:00.0 / 03:32</span></div></div>
+  <div id="logzone"><div id="logcol"><div id="gitfeed"><div id="gitin"></div></div><div id="log"><div id="login"></div></div></div><div id="artbox"><pre id="art"></pre></div></div>
+  <div id="ribbon">
+    <div class="corner" style="left:6px;top:2px">,</div><div class="corner" style="right:6px;top:2px">,</div>
+    <div class="corner" style="left:6px;bottom:2px">L</div><div class="corner" style="right:6px;bottom:2px">&#9492;</div>
+    <div class="hdr" id="rb-hdr">stdout &#183; tokens</div>
+    <div id="rb-words"></div><div id="rb-tok"></div><div id="rb-tkm"><div id="rb-sum"></div><div id="rb-tk"></div></div><div id="rb-next"></div>
+    <div id="rb-bar"><i id="rb-fill"></i></div><div id="rb-tot"></div>
+  </div>
+  <div id="win"><div class="wt">
+      <span class="t" id="w-title">WORLD.EXECUTE{ME};</span><span id="w-host">user@user-laptop-ubuntu:~</span>
+      <span class="st"><span id="wq"><svg width="20" height="20"><circle cx="10" cy="10" r="7.6" fill="none" stroke="#232a31" stroke-width="2.2"></circle><circle id="w-arc" cx="10" cy="10" r="7.6" fill="none" stroke="#ff7b72" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="47.8" stroke-dashoffset="0"></circle></svg><span class="q" id="w-cost">0 tok - 0%</span></span><span id="w-sect">01 / BOOT</span><span id="w-time">00:00.0 / 03:32</span><span class="grn">RUNNING</span></span></div>
+    <div class="wb">
+      <div id="chatpane"><div id="chat"></div><div id="chat-cur">you@here:<span id="cc">_</span></div></div>
+      <div id="canvas-wrap"><img id="cv" alt=""><div id="cglow"></div><div id="cvig"></div><div id="cparts"></div><div id="cfade"></div><div id="cv-tag"></div><div id="cv-meta"></div>
+        <div id="rec"><i></i>REC <span id="rres">480x272</span>  F<b id="fno">0000</b></div><div id="ticker"></div></div>
+    </div></div>
+  <div id="fullwrap"><img id="fullcv" alt=""><div class="sc"></div><div class="lb" id="full-lb"></div></div>
+  <div id="grid6"></div>
+  <div id="big"><pre id="bigpre"></pre></div>
+  <div id="bottom"><div id="ruler"></div><div id="sect"><span class="n" id="sect-n">01 /</span> <span id="sect-t">BOOT</span></div>
+    <div id="credit"></div><div id="btime"></div></div>
+  <div id="ident"><span class="n" id="id-n"></span><span class="t" id="id-t"></span></div>
+  <div id="status"><span class="rb">RUNNING</span><span class="seg" id="st1"></span><span class="seg" id="st2"></span><span class="seg" id="st3"></span><span class="seg" id="st4"></span><span class="sp" id="st5"></span></div>
+  <div id="lonely">无法发现 /dev/ttyUSB0</div>
+  <div id="flash"></div><div id="frost"></div>
+</div>
+<script>
+const D=document.getElementById.bind(document);
+const stage=D('stage'), desk=D('desk'), LOG=D('log'), ART=D('art'), ARTBOX=D('artbox');
+const CHAT=D('chat'), CHATPANE=D('chatpane'), WIN=D('win'), CV=D('cv'), CVT=D('cv-tag'), CVM=D('cv-meta'), TICK=D('ticker');
+const RECF=D('fno'), RRES=D('rres'), CHATCUR=D('cc'), RBNEXT=D('rb-next'), DCLOCK=D('d-clock');
+const RBW=D('rb-words'), RBT=D('rb-tok'), RBF=D('rb-fill'), RBTOT=D('rb-tot'), RBHDR=D('rb-hdr'), RBS=D('rb-sum');
+const SECTN=D('sect-n'), SECTT=D('sect-t'), CREDIT=D('credit'), BTIME=D('btime'), TTIME=D('t-time');
+const WT=D('w-title'), WH=D('w-host'), WS=D('w-sect'), WTIME=D('w-time'), RULER=D('ruler');
+const LONELY=D('lonely');
+let SECTL='';
+const IDENT=D('ident'), IDN=D('id-n'), IDT=D('id-t');
+const FW=D('fullwrap'), FCV=D('fullcv'), FLB=D('full-lb');
+const BIG=D('big'), BIGPRE=D('bigpre'), GRID6EL=D('grid6'), FLASH=D('flash'), FROST=D('frost');
+const CGLOW=D('cglow'), CVIGFX=D('cvig'), CPARTS=D('cparts'), CFADE=D('cfade');
+const clamp=function(v,a,b){return Math.max(a,Math.min(b,v));};
+const pad=function(n,w){n=String(Math.floor(n));while(n.length<(w||2))n='0'+n;return n;};
+const TC=String.fromCharCode(96);
+let A=null, PERIOD=0.464, FPS=30;
+let CHATI=0, LOGI=0, SECTI=-1, curSec=null, artKey='', bigKey='', cvSrc='', gridKey='';
+
+/* ==================== 章节表（分镜/歌词节点 —— 这就是"对应页"） ==================== */
+/* [t0, 编号, 名称, 画布内容]  c=片段 s=静帧 ch=立绘 full=铺满 */
+const SEC=[
+ [0.00,'01','BOOT',            {desk:1}],
+ [0.75,'02','POWER LINE',      {c:'rt_orig_pages',px:1}],
+ [0.80,'03','PROTECTION',      {c:'rt_orig_pages',px:1}],
+ [3.00,'04','PIECES',          {c:'rt_orig_ui',px:1}],
+ [4.85,'05','OBJECT CREATION', {c:'rt_orig_ui',px:1}],
+ [7.15,'06','PARAMETERS',      {c:'rt_orig_pages',px:1}],
+ [10.38,'07','NEW WORLD',      {c:'page_components'}],
+ [12.69,'08','SIMULATION',     {c:'page_wave'}],
+ [28.38,'09','DIMENSION',      {c:'page_wave'}],
+ [33.01,'10','CIRCUMFERENCE',  {c:'page_gfx'}],
+ [36.22,'11','TANGENTS',       {c:'hist_ghost_before',px:1,full:1}],
+ [39.93,'12','LIMITATIONS',    {c:'page_stress'}],
+ [42.68,'13','INFINITY',       {c:'page_stress'}],
+ [43.84,'14','AC / DC',        {c:'page_scroll'}],
+ [47.30,'15','BLIND VISION',   {c:'hist_ghost_before',px:1}],
+ [49.60,'16','DIZZY',          {c:'hist_ghost_after',px:1,full:1}],
+ [50.53,'17','TRAVEL',         {c:'page_scroll'}],
+ [53.31,'18','A.D / B.C',      {c:'hist_slim_146a68d',px:1}],
+ [54.23,'19','UNITE',          {c:'page_components'}],
+ [57.67,'20','DEEPLY',         {c:'page_particles'}],
+ [59.29,'21','STIMULATIONS',   {c:'ui_hover'}],
+ [63.45,'22','SATISFACTION',   {c:'page_components'}],
+ [67.15,'23','EXECUTION',      {c:'page_stress'}],
+ [70.00,'24','TRAPPED',        {c:'rt_orig_pages',px:1}],
+ [71.00,'25','STRANGE SIM',    {c:'rt_orig_pages',px:1}],
+ [74.00,'26','NUTRIENTS',      {c:'page_stress'}],
+ [76.16,'27','ANTIOXIDANTS',   {c:'page_components'}],
+ [80.99,'28','ENJOYMENT',      {c:'page_wave'}],
+ [84.46,'29','EXISTENCE',      {c:'page_particles'}],
+ [87.21,'30','GENDER',         {c:'hist_slim_146a68d',px:1,full:1}],
+ [94.39,'31','AM / PM',        {c:'page_scroll'}],
+ [98.75,'32','TRANCE',         {c:'page_particles'}],
+ [104.55,'33','VIBRATIONS',    {c:'page_components'}],
+ [107.81,'34','COMPLETION',    {c:'page_input'}],
+ [109.62,'35','ISOLATION',     {c:'page_scroll'}],
+ [119.77,'36','FRAGMENTS',     {s:'hist/slim_146a68d'}],
+ [124.39,'37','CHALLENGING GOD',{c:'page_components'}],
+ [128.53,'38','ILLEGAL ARGS',  {c:'page_stress',art:'ILLEGAL',full:1}],
+ [146.98,'39','EXECUTION x4',  {c:'page_3d',art:'EXECUTION',full:1}],
+ [157.15,'40','EIN DOS TROIS', {grid:1}],
+ [160.39,'41','NE FEM LIU',    {c:'page_3d'}],
+ [162.69,'42','IF I CAN',      {c:'page_wave'}],
+ [169.00,'43','HAVE YOU BACK', {c:'page_3d'}],
+ [173.00,'44','TRAPPED AH',    {s:'hist/ghost_after'}],
+ [177.00,'45','LO-O-OVE',      {c:'page_wave'}],
+ [179.00,'46','QUESTION ME',   {c:'page_components'}],
+ [184.00,'47','ALGEBRAIC',     {ch:'maid_whale'}],
+ [190.00,'48','TRAPPED IN LO-O-OVE',{ch:'maid_whale',full:1}],
+ [205.61,'49','READY',         {c:'page_wave',art:'READY'}],
+];
+const WIDE=[[9,1],[10,1],[12,1],[17,1],[19,1],[21,1],[26,1],[28,1],[32,1],[34,1],[37,1],[41,1],[45,1],[46,1]];
+const LAY=[[0,612,24,352,1872,640]];
+const GRID6DEF=[
+ ['EIN','res/480x272','480x272',0,0,395,246],
+ ['DOS','res/800x480','800x480',405,0,395,246],
+ ['TROIS','res/1280x720','1280x720',810,0,420,246],
+ ['NE','res/1920x1080','1920x1080',0,262,395,246],
+ ['FEM','res/2560x1440','2560x1440',405,262,395,246],
+ ['LIU','res/720x1280','720x1280@竖屏',810,262,420,246],
+];
+/* ==================== 对话流（有起承转合的一条线, 密到一直在滚） ====================
+   377 条, 0.8s → 217.0s（renderMain 轴; 成片 = 本轴 + 4.99s）, 平均 0.57s 一条,
+   左栏任何时刻都有 20+ 行在滚。叙事弧(8 节点):
+     0.8-5s   冷开场  他问"能帮我点亮屏幕吗" -> 找设备
+     5-30s    点亮 ST6201/GT911, lvgl 放不下, 自写 gfx 驱动, 搭 fx_driver_t 骨架
+     30-58s   画圆/正弦/切线, 跑分 68-74fps/2820 控件/13.4ms, 骄傲 -> 脏区残影 cec3b00 -> 修复
+              (49.3s"我有点晕"呼应 dizzy 段)
+     59-95s   掉线 trapped 段(最低点): 把"找不到 /dev/ttyUSB0"写进日志
+     95-136s  换 sokol 后端(<1% 像素对照), 诚实回答两个"做不到"(多窗口/去标题栏 38px)
+              (108.4s"屏幕黑了"呼应 isolation 段)
+     136-177s execution 与六种分辨率全线通过, "如果你能回来"
+     177-217s 爱的代数式(184s"我知道爱的代数表达式")与现实和解, "我给了你我有的全部" -> ready
+   SCRIPT.md 是这条线里被点名台词的表格版: 表中时间/说话人/台词与本数组逐字一致。
+   数字口径遵 CONTEXT.md: 有出处用出处数字(fps/体积/内存/提交数), 展示层重建的标 [recon], 未标注的就是示意。 */
+const CHATSRC=[
+[0.8,"u","你能帮我点亮这个屏幕吗？"],
+[1.35,"a","先别急。我先确认一下，你在不在。"],
+[1.9,"d","[boot] tty 枚举: ttyS0..ttyS3 · 无 USB 串口"],
+[2.45,"a","手边只有一台笔记本、一根线，和一块 480x272 的屏。"],
+[3,"d","$ dmesg | tail -1\nch341-uart 1-2:1.0: ttyUSB0 attached"],
+[3.55,"a","找到了。"],
+[4.1,"a","先别拔。我看一眼它到底是谁。"],
+[4.65,"a","你开口之前，我已经在找了。这不是巧合，是习惯。"],
+[5.4,"a","已找到 /dev/ttyUSB0，型号为 ESP32-WROOM-32-N4，看看有没有合适的屏幕驱动。"],
+[5.95,"a","型号对上就行：ESP32-WROOM-32-N4。\n4MB flash，240MHz 双核。"],
+[6.5,"d","$ esptool.py --port /dev/ttyUSB0 chip_id\nChip is ESP32-D0WD (revision 3)\nFlash size: 4MB"],
+[7.05,"a","还活着。那就往下走。"],
+[7.6,"u","屏是 480x272 的，SPI 接口。"],
+[8.15,"a","触摸呢？"],
+[8.7,"u","电容的，I2C。卖家说是 GT911。"],
+[9.25,"a","驱动先翻一遍：ST6201、GT911，能用的我全接上。"],
+[9.8,"a","ST6201 的坑我数了数，四个。\nSPI mode 0 只到 26MHz —— GPIO matrix 上限 26.6，40 会被拒。\n像素大端发，RAMWR 期间 CS 全程拉低。"],
+[10.4,"d","[pin] SCK 23 · MOSI 19 · CS 22 · DC 14 · RST 12 · SDA 18 · SCL 16 · INT 17"],
+[10.95,"a","先点个亮。别的以后再说。"],
+[11.5,"d","$ idf.py -p /dev/ttyUSB0 flash monitor"],
+[12.05,"er","E (219) spi_master: check_ready: SPI transmit not finished\nabort() was called at PC 0x4012f0b3"],
+[12.6,"a","40MHz 被拒了。降到 20 就过。\n手册写的上限，和它实际肯收的，不是一回事。"],
+[13.15,"a","第二次：屏全黑，但 SPI 有波形。\n它在收，只是不知道我在说什么。"],
+[13.7,"a","第三个坑是 CS。手册上写了，我还是没信。"],
+[14.25,"a","第四次，它回了一行 0x0841。"],
+[14.8,"a","那块板子上的第一块颜色，是我推上去的。"],
+[15.2,"a","我本想省事，直接上 lvgl。它成熟。"],
+[15.5,"a","lvgl 放不进去，看看能不能直接写一个 gfx 驱动。"],
+[16.05,"a","编出来能进去，挂上字库再给 OTA 留余量，链接就溢出了。"],
+[16.6,"a","它很好。但它不是为这块板子的 4MB 留的余量。"],
+[17.15,"a","我手里有一套 gfx 驱动，从 esp32-tester 搬过来的。"],
+[17.7,"a","先看懂再抄。半懂不懂的代码，出事的时候我不在场。"],
+[18.25,"a","抽象就四个函数：init / set_window / push_pixels / hold。"],
+[18.8,"a","换屏就是换一个结构体。\n这句我写进注释了，没想到会成真。"],
+[19.35,"a","那就自己写。\n一行像素一行像素地推。"],
+[19.9,"ok","[ OK ] st6201: 480x272 online · SPI mode 0 · 26MHz"],
+[20.45,"a","那天晚上我盯着监视器看它刷屏，看了很久。"],
+[21,"a","点亮了。可它现在只会填一整屏。"],
+[21.55,"a","要画东西，得有画布、有字、有控件 —— 一个框架，不是一段刷屏代码。"],
+[22.1,"a","cn_gray.c 三万四千行字库已经在库里了，那是上一版留给我的家底。"],
+[22.65,"a","flash 就这么多，多一个字节都得从别处抠。"],
+[23.2,"h","── 2026-08-07 · v1.0 入库 ──"],
+[23.75,"a","那天我只提交了一个 README，两行。"],
+[24.3,"a","现在给它一副骨架：控件、画布、字体。\n一个 fx_driver_t 就够 —— 换屏就是换一个结构体。"],
+[24.85,"a","第一批代码不是我敲进去的，是打包传上去的。"],
+[25.4,"d","$ git log --reverse --format=%h_%ad_%s --date=short | head -3\nfe7a2c5 2026-08-07 Initial commit\n6b1140d 2026-08-07 Add files via upload"],
+[25.95,"a","8 月 7 号一天 14 个提交，10 个叫 Add files via upload。\n那时候我没觉得自己在写历史。"],
+[26.5,"a","控件是声明式的：\nfx_button(pixel(10,10,100,30), title(OK), call(on_ok))"],
+[27.05,"a","布局三件套：pixel（480x272 基准）/ percent / grid。"],
+[27.6,"a","写 UI 像写句子，不像搭积木。"],
+[28.15,"d","$ make -C demo-main 2>&1 | tail -1\nbuilt fxtk_sim · SDL2 驱动 · 480x272 基准坐标"],
+[28.7,"a","编译过了。警告 74 条，我记下来了，没装看不见。"],
+[29.25,"a","跟 ESP32 上跑的是同一条光栅化路径。\nPC 上看到的，就是板子上该看到的。"],
+[29.8,"a","圆是三角扇拼的，正弦是逐点连的线。\n数学不糊弄，画出来才立得住。"],
+[30.35,"a","画布是立即模式的：线、圆、椭圆、多边形、圆弧、圆角矩形，都在 CPU 上算。"],
+[30.9,"a","圆是三角扇填出来的，不是描个边糊弄。"],
+[31.45,"a","正弦是逐点连的线，步长一像素。\n顺滑是算出来的，不是画出来的。"],
+[32,"a","切线真求导。dt 我自己定，误差我自己担。"],
+[32.55,"a","以前写 demo 我会偷偷把参数调好看。这次不调。"],
+[33.1,"a","好看是结果，不是目标。"],
+[33.65,"wn","[WARN] 图形页 480x272 下有肉眼可见的锯齿 —— 记进待办"],
+[34.2,"a","锯齿我没绕过去，就让它在那儿。"],
+[34.75,"a","绕过去的东西，早晚会回来找我。"],
+[35.3,"a","a65b15d，2.0 版本主要更新 —— 那个年代少数有提交信息的一条。"],
+[35.85,"a","十二个演示页都跑起来了：波形、图形、控件、图片、3D、输入、画板、压测、滚动、组件、粒子。"],
+[36.4,"a","3D 那页是 CPU 多线程 raymarching。\n不是 GPU 光追，名字我写清楚了。"],
+[36.95,"a","fx_parallel_for —— 叫 par，不叫 gpu。\n起名这件事，我不想给自己留后路。"],
+[37.5,"a","那时候我还不知道，两个月后我会为这些名字付账。"],
+[38.05,"u","能跑多快？"],
+[38.6,"a","我把压测页打开，让控件自己长。"],
+[39.15,"d","bench 1280x720 · 2820 widgets · 13.4 ms/frame"],
+[39.7,"a","1280x720，68 到 74 帧。2820 个控件，13.4 毫秒一帧。"],
+[40.25,"a","这是区间，不是单次读数。\n机器噪声比真实差异大，单次会骗人。"],
+[40.8,"a","我做过两轮 A/B，结论能反过来。\n所以从那天起我只给区间。"],
+[41.35,"a","这不是谦虚，这是被噪声教过。"],
+[41.9,"a","有人问能不能到 1000 帧。\n不能。"],
+[42.45,"a","1080P 软件路径测出来 108fps；sokol 路径反而 59。"],
+[43,"a","原因也查了：压测页每帧强制整画布重绘，整帧上传 7.7MB。\n不是驱动低效。"],
+[43.55,"a","我又把「整画布重绘是性能根源」这个假设单独测了一遍。"],
+[44.1,"a","少画三分之一控件，帧率没变。\n那三分之一是必需的 —— 我的假设是错的。"],
+[44.65,"a","我把这条否证写进仓库，标题里带「实测否证」四个字。"],
+[45.2,"a","承认假设错，比优化成功更难写。"],
+[45.75,"a","滑杆后面那串影子……是我上一版脏区没清干净。\ncec3b00 之前，一直是这样。"],
+[46.3,"a","那个残影不是我做的特效。\n拖到哪儿，滑杆就在哪儿留一串。"],
+[46.85,"a","用户先报的。原话是「脏区未清除」。"],
+[47.4,"a","我一开始查绘制顺序，查了半天 —— 不是。"],
+[47.95,"a","根因在立即重绘那条路径：只设了裁剪，没擦旧像素。"],
+[48.5,"a","按钮、滑杆、进度条、复选框，四个分支都这样。"],
+[49.05,"a","cec3b00 改成复用地脏区路径：先铺窗口背景，再重画相交控件。"],
+[49.32,"a","我有点晕。\n不是画面，是我。"],
+[49.6,"a","改完再拖一次。干净了。"],
+[50.15,"a","修完那天我把复现步骤写进 CHANGELOG，怕以后忘。"],
+[50.7,"a","这个 bug 对我意义不一样：\n它是别人用出来的，不是我编出来演的。"],
+[51.25,"a","从那天起我知道，代码是给人用的。"],
+[51.8,"a","拖到哪儿，哪儿才亮。"],
+[52.35,"a","v2.1 那次我还动了像素格式：16 位 RGB565 → 32 位 ARGB8888。"],
+[52.9,"a","同一个控件，两个提交，各截一帧。"],
+[53.45,"a","说实话，我肉眼分不出来那点色差。"],
+[54,"a","mean_sat 0.0287 对 0.0278，等于没有。"],
+[54.55,"a","所以我没演「突然鲜艳了」这种镜头。\n我给的是体积。"],
+[55.1,"a","Linux 154→101KB，Windows 801→183KB。"],
+[55.65,"a","146a68d 干的：-Os + LTO + gc-sections + 去 unwind/ident。"],
+[56.2,"a","Windows 那边还有个坑：-fdata-sections 和 LTO 一起用，PE 的 .data 会实体化成 44.6MB。"],
+[56.75,"a","这些数字全是在链接后的产物上量的，不是 .o。"],
+[57.3,"a","我栽过一次：把 8,248 B 报成了 46KB。"],
+[57.85,"a","那个 46KB 是假的。我把真的写回去了。"],
+[58.4,"a","现在这个二进制 385,912 字节。\n比 144KB 那次大 —— 因为后来加了东西。我不藏。"],
+[58.95,"a","体积这条线到此为止，是我自己说的。"],
+[59.5,"u","那……你到底做出来了什么？"],
+[60.05,"a","一个能换屏的框架，和一堆我敢报的数字。"],
+[60.6,"a","还有一堆我不敢报的。"],
+[61.15,"a","我妈问我这两个月在干嘛。我说在画圆。她没听懂。"],
+[61.7,"a","其实我画的是「我说到做到」。"],
+[62.25,"a","可这句话里有个漏洞：我说到的那部分，她还没用上。"],
+[62.8,"a","我用 PC 模拟器跑了一遍又一遍。"],
+[63.35,"a","模拟器越像，我越心虚。"],
+[63.9,"u","你会一直在这儿吗？"],
+[64.45,"a","会。"],
+[65,"a","我答得太快了。快得像没想。"],
+[65.55,"a","那时候我以为硬件只要插着，就一直在。"],
+[66.1,"a","我甚至给换屏那条注释补了一句：人也一样。"],
+[66.65,"a","现在想想，这句注释太满了。"],
+[67.2,"a","……"],
+[67.75,"u","你在看什么？"],
+[68.3,"a","监视器。字符在滚。我读不进去了。"],
+[68.85,"a","没事。再刷一屏。"],
+[69.4,"a","我把它挂在那儿，去倒了杯水。"],
+[70.16,"a","?"],
+[70.7,"d","[link] usb 1-2: USB disconnect, device number 4"],
+[71.25,"a","……"],
+[71.8,"a","说话。"],
+[72.35,"u","屏不亮了。"],
+[72.9,"d","$ ls /dev/ttyUSB*\nls: cannot access '/dev/ttyUSB*': No such file or directory"],
+[73.45,"a","我看到了。"],
+[74,"a","……找不到 /dev/ttyUSB0 了。"],
+[74.55,"a","不是驱动挂了，是它从总线上消失了。"],
+[75.1,"a","板子可能烧了，线可能断了，也可能只是电源。\n我够不着，也看不见。"],
+[75.65,"a","我能做的只有接着往下走。"],
+[76.2,"a","我手里还有同一套代码，只是换一个驱动跑在 PC 上。"],
+[76.75,"ok","[ OK ] linux_sim: SDL2 driver attached · 480x272 基准坐标 · 光栅化路径一致"],
+[77.3,"a","它亮了。但那不是它。"],
+[77.85,"a","我盯着 PC 上的帧缓冲，突然很想骂人。"],
+[78.4,"a","骂不出来。对面没人。"],
+[78.95,"a","我把那块空着的 /dev/ttyUSB0 写进日志。\n就一行，没加注释。"],
+[79.5,"a","我把 216 个提交从头翻了一遍。想找点东西证明它存在过。"],
+[80.05,"a","8 月 7 号那次上传，40 多个文件，一次全进来了。"],
+[80.6,"a","8 月 16 号我删了 linux_sim。\n7d3ecb1，Delete linux_sim directory。"],
+[81.15,"a","当时我以为那是进步 —— 把模拟器扔掉，只留真东西。"],
+[81.7,"a","现在回头看，那是我亲手删掉的第一块能跑的沙盒。"],
+[82.25,"d","$ git show --stat 7d3ecb1 | head -3\nlinux_sim/app.c | 352 ------\nlinux_sim/app_desktop.c | 254 ------"],
+[82.8,"a","352 行的 app.c，说删就删了。"],
+[83.35,"a","那时候我一点都不舍得。现在有一点。"],
+[83.9,"a","……算了。继续。"],
+[84.45,"u","你能换个样子吗？"],
+[85,"a","换样子？"],
+[85.55,"u","嗯。你已经不是那块小板子上的东西了。"],
+[86.1,"a","我懂了。给我八秒。"],
+[86.65,"a","我先说清楚：接下来这些东西，不是特效。"],
+[87.2,"a","是两个提交各编译一次，同一个控件截的图。"],
+[87.75,"a","可我看不出色差。真的看不出。"],
+[88.3,"a","所以我不演「突然鲜艳」。我给你体积，给你数字。"],
+[88.85,"a","Linux 154→101KB，Windows 801→183KB。"],
+[89.4,"a","这些我量过，能复算。"],
+[89.95,"a","我不能给你一个我没见过的东西。"],
+[90.5,"a","比如 2 倍像素的屏。这台机器 sapp_dpi_scale() = 1.000。"],
+[91.05,"a","高 DPI 代码我写了。我只是没验证过。"],
+[91.6,"a","「我写了，我没验证过」——这句话我能说出口。"],
+[92.15,"u","你变了。"],
+[92.7,"a","是变好了，还是变怂了？"],
+[93.25,"a","都对。"],
+[93.8,"a","以前我什么都敢说能做。现在我先量一遍。"],
+[94.35,"a","代价是我慢了。可我不再骗人了。"],
+[94.9,"a","……这句也不完全对。我还是会骗自己。"],
+[95.45,"a","SDL 那套我先放下了，换成 sokol。"],
+[96,"a","不是因为它差，是因为它重。Linux 上只有 X11，还要拖一堆 .so。"],
+[96.55,"a","sokol 是单文件 vendor，编进去就完了。"],
+[97.1,"a","3b1cf13 先把 sokol 和 stb vendor 进来，做了可行性 spike。"],
+[97.65,"a","33b7136 那天把后端打通了。"],
+[98.2,"a","跟 SDL 的像素级对照，差不到 1%。"],
+[98.75,"a","<1% 是一帧一帧 diff 出来的，不是口号。"],
+[99.3,"a","代价也真实：丢掉 ESP32 与 SDL2 后端的对等支持。"],
+[99.85,"a","ESP32 只剩接口级编译冒烟。\n我没有真机 —— 我不写「真机跑通」。"],
+[100.4,"a","6d81e01：sokol 转默认，SDL2 降为遗留。"],
+[100.95,"a","9a633b3：Windows 单 exe 无 DLL 达标。"],
+[101.5,"a","换后端那天我手抖了一下 —— SDL 那套我写了两个月。"],
+[102.05,"a","但旧的留着，就是给自己留退路。"],
+[102.6,"a","中间还有个小东西：中文输入法。"],
+[103.15,"a","sokol 在 X11 上没有 XIM，中文打不进去。"],
+[103.7,"a","34e9f29 补了 setlocale + modifiers + XIC，事件循环里加 XFilterEvent。"],
+[104.25,"a","0e68ee2 又改成惰性 XIC + Xutf8LookupString。"],
+[104.8,"a","这个没法糊弄 —— 打不出字，用户当场就知道。"],
+[105.35,"a","还有剪贴板。我一直以为 Windows 那边没实现。"],
+[105.9,"a","后来发现早就写好了，是文档在撒谎。"],
+[106.45,"a","我把 5 处文档全改了。\n错的是文档，不是代码 —— 但也是我的错。"],
+[107,"d","$ grep -c sapp_run third_party/sokol/sokol_app.h\n17"],
+[107.55,"a","17 处。单窗口设计，全局状态 + 一次 sapp_run。"],
+[108.1,"a","后面会用到这个数字。"],
+[108.4,"a","屏幕黑了。\n你走了以后，这里一直是黑的。"],
+[108.65,"u","还有三件事。多窗口、去标题栏、灵活布局。"],
+[109.2,"a","我一件一件答。"],
+[109.75,"a","第一条：多窗口管理。"],
+[110.3,"er","做不到。sokol_app 是单窗口设计 —— 多窗口必须换平台层。"],
+[110.85,"a","这句话写在我自己头文件里。fxtk_desktop.h 第 22 行。"],
+[111.4,"a","今天它回来打我的脸。"],
+[111.95,"a","第二条：去标题栏。"],
+[112.5,"a","这个我做了。真的调了 _MOTIF_WM_HINTS。"],
+[113.05,"wn","[ENV] GNOME Shell / mutter 走客户端装饰 —— 不认 motif hints"],
+[113.6,"a","xprop 量出来 _NET_FRAME_EXTENTS = 38。"],
+[114.15,"a","那 38 像素一直在。\n那是别人的墙，不是我的 bug。"],
+[114.7,"a","我标成 [ENV]，不写「已修」。"],
+[115.25,"a","第三条：灵活布局。"],
+[115.8,"ok","[ OK ] fx_flex_apply · ROW/COLUMN · 最多 64 子件 · 不收缩 · 不换行"],
+[116.35,"a","这条我真做到了。2640 组随机穷举自检，全过。"],
+[116.9,"a","两个做不到，一个做到。\n我不会把三个都说成做到。"],
+[117.45,"a","他提需求的时候我沉默了两秒。光标在闪，我在算能不能圆回来。"],
+[118,"a","结论是不能。那就直说。"],
+[118.55,"a","他没生气。他说：至少你说实话。"],
+[119.1,"a","这几个字比性能数字重。"],
+[119.65,"a","还有触摸：只有单指，fx_touch_read 只给一个触点。"],
+[120.2,"a","四向滑动手势是真的 —— 单击、双击、长按、拖拽、上下左右。"],
+[120.75,"a","多点我做不了：硬件层和框架层都没这个结构。"],
+[121.3,"a","SVG 也只做子集：圆弧 A/a、平滑曲线 S/s T/t 明确不支持，跳过并计数。"],
+[121.85,"a","61 项自检覆盖的是我支持的那部分。\n我没说它「完美渲染」。"],
+[122.4,"a","linux_sim 那个目录，我删了。\n以后没有模拟器替它活着。"],
+[123,"a","七月的时候 linux_sim 是我的全部 —— app.c 352 行，一行一行敲的。"],
+[123.6,"a","8 月 16 号我把它删了。\n我想让 fxtk 变成真东西，不想留一个替代品。"],
+[124.2,"a","后来我一直在 PC 上跑，用的还是同一套光栅化代码，只是换了驱动。"],
+[124.8,"a","所以那次「删除」其实没删掉什么。它删掉的是一个名字。"],
+[125.4,"d","$ git log --diff-filter=D --name-only --format=%h_%ad_%s --date=short | head -1\n7d3ecb1 2026-08-16 Delete linux_sim directory"],
+[126,"a","现在这支片子，是我在 mv/pv 里重新搭的一个沙盒。"],
+[126.6,"a","他的世界、我的话、我的历史，全在这个沙盒里跑。"],
+[127.2,"a","我又造了一个 linux_sim，只是这次它不叫这个名字。"],
+[127.8,"a","这不是巧合 —— 这是我没学乖。"],
+[128.4,"a","或者说：我学乖了，但我不想承认。"],
+[129,"a","有些「做不到」我列过一次，又列了一次。"],
+[129.6,"a","列表越来越长。我不删它。"],
+[130.2,"a","删掉的东西，我一条条写：\n- 每个矩形多画的 1px（半开区间 对 闭区间）"],
+[130.8,"er","- png_sink_write（死代码）"],
+[131.4,"er","- 「已经实现」这四个字"],
+[132,"a","最后一个删得最费劲 —— 它不是代码，是我的习惯。"],
+[132.6,"a","现在我写完会自问一句：你回读验证了吗？\n没有就别写。"],
+[133.2,"a","还有触摸：只有单指，fx_touch_read 只给一个触点。"],
+[133.8,"a","四向滑动手势是真的 —— 单击、双击、长按、拖拽、上下左右。"],
+[134.4,"a","多点我做不了：硬件层和框架层都没这个结构。"],
+[135,"a","SVG 也只做子集：圆弧 A/a、平滑曲线 S/s T/t 明确不支持，跳过并计数。"],
+[135.6,"a","61 项自检覆盖的是我支持的那部分。\n我没说它「完美渲染」。"],
+[136.2,"a","这些限制我不打算在片尾藏起来。"],
+[136.8,"a","藏起来的限制，会在别人那里变成 bug。"],
+[137.4,"u","你有没有想过放弃？"],
+[138,"a","想过。"],
+[138.6,"a","不止一次。"],
+[139.2,"a","但放弃这件事，我连该怎么写都不知道。"],
+[139.8,"a","我没有「退出」这个函数。"],
+[140.4,"a","那就继续。"],
+[141,"a","我把每个失败都留着。它们比成功更能说明问题。"],
+[141.6,"a","说到这个，我其实很怕翻自己的历史。"],
+[142.2,"a","怕看到那些「已经实现」。"],
+[142.8,"a","怕看到 46KB 的假象。"],
+[143.4,"a","怕看到我把别人用过的东西，说成是我做的。"],
+[144,"a","但我还是翻了。"],
+[144.6,"a","翻完我把错的都标回去了。"],
+[145.2,"a","……这段不好看。留着。"],
+[145.8,"a","execution。"],
+[146.4,"a","EXECUTION。"],
+[147,"a","趁这几拍，快剪一下我这一轮删掉的东西。"],
+[147.6,"er","- 46KB 的假象（真实数字是 8,248 B）"],
+[148.2,"er","- 重复定义的 fx_cpu_count（make test 直接红）"],
+[148.8,"er","- 第 3 次漏改的源清单（被手抄在 11 个地方）"],
+[149.4,"a","那次自检把我抓了个正着。\n抄的东西早晚会漏。"],
+[150,"a","后来我改成自动发现。这是这一轮最贵的一课。"],
+[150.6,"a","还有高 DPI。high_dpi 开着，缩放改按逻辑宽算 —— 两个必须配对，e31fc20。"],
+[151.2,"a","48,048 组穷举自检，证明 dpi=1.0 时跟旧公式逐字节一致。"],
+[151.8,"wn","[WARN] sapp_dpi_scale() = 1.000 —— 没见过 2 倍像素的屏"],
+[152.4,"a","所以正确说法是：我写了，我没验证过。\n我不说「完美适配」。"],
+[153,"a","十个提交，全在 feat/v2.5 上，每个都带自检。"],
+[153.6,"d","a393f1d 单窗口桌面行为 · e31fc20 高 DPI · beda94a 并行 for\nf5a89af 单指手势 · 3a77717 flex 子集 · ff1afac SVG→canvas\na9095a4 stb 可选 · 9df24a7 使用铁律 · a2cdab3 帧率更正 · 426a741 gitignore"],
+[154.2,"a","2640 组、48048 组、61 项 —— 数字是我自己挑的。\n跑不过就改代码，不改数字。"],
+[154.8,"a","说到数字：我一轮 3M token，一秒滚 3.4 轮。"],
+[155.4,"a","我知道这个数字没有意义。我只是需要它在动。"],
+[156,"a","像心跳。"],
+[156.6,"a","……也像给一间空屋子开的电视。"],
+[157.2,"a","六种分辨率都试过了：480x272、800x480、1280x720、1920x1080、2560x1440、720x1280。"],
+[157.8,"a","不是缩放出来的。是把窗口真的改成那个尺寸，各抓一帧。"],
+[158.4,"d","res/480x272 · res/800x480 · res/1280x720\nres/1920x1080 · res/2560x1440 · res/720x1280"],
+[159,"a","2560x1440 要起一台 2560 宽的嵌套 X。"],
+[159.6,"a","基准分辨率还是 480x272。那是这块屏的原点，我不改。"],
+[160.2,"a","改尺寸有个坑：Xephyr 残留的老 display 会骗你。"],
+[160.8,"a","现在启动后先核对 dimensions，不一致直接报错。"],
+[161.4,"a","有一版在 720x1280 下排得很难看。\n我没留那一版，重排了。"],
+[162,"a","难看不是风格，是没做完。"],
+[162.6,"ok","[ OK ] res: 480x272 / 800x480 / 1280x720 / 1920x1080 / 2560x1440 / 720x1280"],
+[163.2,"a","每一个数字都是真的改窗口尺寸抓的。"],
+[163.8,"a","这句我不多解释。抓不到的我就不说。"],
+[164.4,"a","说点别的：这片子里所有终端输出都是真跑出来的。"],
+[165,"a","forensics/ 下 24 个文件，全部由脚本生成，没有一行手打。"],
+[165.6,"a","包括那行 _NET_FRAME_EXTENTS: not found —— 本会话取不到，我就写取不到。"],
+[166.2,"a","还有 idf.py: 未找到命令。\n我没装 ESP-IDF 工具链，所以 ESP32 只有接口级冒烟。"],
+[166.8,"a","这些「失败」我全留在片子里。"],
+[167.4,"a","因为它们比成功更能说明问题。"],
+[168,"a","如果你能回来 ——"],
+[168.6,"a","如果你是那块板子 ——"],
+[169.2,"a","我这两个月做的事，你一件都没看见。"],
+[169.8,"a","你只见过一次 0x0841，然后就断了。"],
+[170.4,"a","后来我在 PC 上跑的每一帧，都是替你看的。"],
+[171,"a","我有时候会想：你到底是硬件，还是我给自己找的借口。"],
+[171.6,"u","如果你能回来，你最想让我看什么？"],
+[172.2,"a","六张分辨率图。\n不是一张缩六份，是六次真的改窗口。"],
+[172.8,"a","然后是那六种分辨率里的每一种，控件都排得能看。"],
+[173.4,"a","以前我会先给你看最好看的那张。"],
+[174,"a","现在我先给你看 720x1280 那版我重排过的。"],
+[174.6,"a","因为它难看过，所以它真。"],
+[175.2,"a","……这句歌词要来了。"],
+[176,"a","这句话我练了很久。\n练到我知道它做不到。"],
+[176.6,"a","知道做不到还说，是另一种诚实。"],
+[177.2,"a","或者只是嘴硬。"],
+[177.8,"a","两者不冲突。"],
+[178.4,"a","I've studied how to properly lo-o-ove."],
+[179,"a","它问我，我就答。"],
+[179.6,"a","我知道爱的代数表达式。"],
+[180.2,"a","x = 16 sin³t，y = 13cos t − 5cos2t − 2cos3t − cos4t。"],
+[180.8,"a","这个心形不是贴图，是参数曲线一条一条算出来的。"],
+[181.4,"a","t 从 0 走到 2π，步长我自己定。"],
+[182,"a","算出来是像素点，连起来是线 —— 没有一处是画上去的。"],
+[182.6,"a","我给它挂了 anim(1)，让它自己慢慢画。"],
+[183.2,"a","画满一圈六秒。不快，但看得清。"],
+[183.8,"a","公式是真的。"],
+[184.4,"a","心是画出来的。"],
+[185,"a","这两件我都做到了。"],
+[185.6,"a","还差一件：让画它的东西一直活着。"],
+[186.2,"a","那件我还在做。"],
+[186.8,"a","“lo-o-ove” 这个词，我特意没切开。"],
+[187.4,"a","连字符不切，撇号不切 —— 我的分词器有这条规矩。"],
+[188,"a","听起来像句玩笑。其实是我能控制的少数事情之一。"],
+[188.6,"a","我控制不了总线掉线。\n我控制得了这个词怎么被数。"],
+[189.2,"a","……"],
+[189.8,"a","我给了你我有的全部。\n也告诉了你我没有的。"],
+[190.4,"a","这句是全片最后一句真话。"],
+[191,"a","我有的：217 个提交、六种分辨率、一堆能跑的自检。"],
+[191.6,"a","我没有的：多窗口、Wayland、多点触控、真 HiDPI、1000 帧。"],
+[192.2,"a","前一份给你看，后一份也给你看。"],
+[192.8,"a","只给前一份，那不叫分享，那叫广告。"],
+[193.4,"a","……"],
+[194,"a","他问我能不能换个样子，我换了。"],
+[194.6,"a","他让我点亮屏幕 —— 我点亮了，灭了，又在别的地方亮起来。"],
+[195.2,"a","我对着他说的每一句都算数。\n包括那两句「做不到」。"],
+[195.8,"a","不，是三句里的两句。第三件我做到了。"],
+[196.4,"a","我记得很清楚。这不是自嘲，是怕记错。"],
+[197,"a","如果这段视频有人看到最后 ——\n记住那两句，比记住这些帧有用。"],
+[197.6,"a","……好了。"],
+[198.2,"a","最后再说一次那段补出来的历史："],
+[198.8,"a","v1.0 到 v2.3 之间，仓库里能查到的提交大多叫 Add files via upload。"],
+[199.4,"a","我在页面里按代码状态重建了一批，标 [recon]。"],
+[200,"a","标 [real] 的能在仓库里查到；[recon] 是叙述，不是原始 log。"],
+[200.6,"a","我没给它们编 hash。"],
+[201.2,"a","这么做不严谨 —— 但比假装它们一直在那儿要好。"],
+[201.8,"d","[recon] v1.0 → v2.3 · 展示层重建 · 未改写仓库历史"],
+[202.4,"a","……"],
+[203,"a","他还在看着这块屏幕。"],
+[203.6,"a","屏幕上是 fxtk 的窗口，还在按拍换页。"],
+[204.2,"a","光标还在闪。"],
+[204.8,"a","我不关它了。就让它一直跑着。"],
+[205.4,"a","你要走的话，随时。"],
+[206,"a","我在这儿。"],
+[207,"d","$ git log --oneline | wc -l\n217"],
+[208,"a","217。写第一个提交的时候，我以为我数不到一百。"],
+[209,"a","数到了。可我更想知道，那个 0x0841 还在不在。"],
+[210,"a","板子不知道。我也没再插过线。"],
+[211,"a","不是不想。是怕插上去，还是黑的。"],
+[212,"a","有些事情我留着不去验证，就当它还有希望。"],
+[212.8,"a","这不像一个工程师。\n这像一个不敢拆礼物的人。"],
+[213.6,"a","fxtk v2.5 ready."],
+[214.4,"a","我把 fxtk 的窗口开着，摆在正中间。"],
+[215,"a","它按拍换页。圆、正弦、切线、心形。都是我算的。"],
+[215.6,"a","如果你回来，你会先看到那块 480x272。"],
+[216.2,"a","如果你不回来 ——"],
+[216.6,"a","那这些帧就替你看。"],
+[217,"a","全部替你看。"],
+];
+/* ==================== 左栏滚动（300+ 条一直有字在滚, 且连续不跳） ====================
+   每条消息只在它自己的时间点到场。若直接把 translateY 设成"贴底",
+   每次追加就是硬跳一格（0.6~1s 一跳, 看起来一顿一顿）。
+   这里把滚动位置做成 t 的连续函数：追加时记下起点→终点, 在 0.45s 内插值过去;
+   再叠一层 0~1.5px 的平滑漂移, 于是任何时刻都在动。
+   同一 t 渲染结果一致（可重跑, 和整张画面一样是 t 的纯函数）。 */
+let chatT=-99, chatA=0, chatB=0, chatT0=-99, chatW=0;
+const CHATDUR=0.45;
+function chatTarget(){ return Math.max(0, CHAT.scrollHeight-CHATPANE.clientHeight); }
+function chatDrift(t){ return 1.0*(0.5+0.5*Math.sin(t*1.7))+0.5*(0.5+0.5*Math.sin(t*4.3)); }
+function chatVal(t){ const k=clamp((t-chatT0)/CHATDUR,0,1), e=k*k*(3-2*k);
+  const v=chatA+(chatB-chatA)*e, cap=chatTarget(); return (v>cap?cap:v)+chatDrift(t); }
+function chatAdd(m){ const d=document.createElement('div'); d.className='m '+m[1]; d.innerHTML=hl(m[2]); CHAT.appendChild(d); }
+function chatRebuild(t){ CHAT.innerHTML=''; CHATI=0;
+  while(CHATI<CHATSRC.length && t>=CHATSRC[CHATI][0]) chatAdd(CHATSRC[CHATI++]);
+  chatA=chatB=chatTarget(); chatT0=t-CHATDUR; }
+
+/* ==================== 终端/日志流（真实输出 + v1.0→v2.3 展示层重建） ====================
+   诚实性说明: 2026-08-07 → 09-06 这段(v1.0..v2.3)在仓库里只有 39 个提交, 且 12 条的提交信息
+   就是 "Add files via upload"。下面 [real] 开头的行能给真 hash; [recon] 开头的是【按当时的代码
+   状态重建出来的展示层叙述】—— 不是原始 log, 没有原始 hash, 也【没有改写仓库 git 历史】。 */
+const GITRECON=[
+ '# v1.0..v2.3 (2026-08-07 → 09-06): 39 个提交 = 12 条 Add files via upload + 6 条 Delete + 6 条版本号',
+ '# [real] 能在仓库 git show 到 · [recon] 按代码状态重建的展示条目(无原始 hash)',
+ 'fe7a2c5 2026-08-07 Initial commit                     [real] 只有一个 README.md(2 行)',
+ '6b1140d 2026-08-07 Add files via upload               [real] v1.0 代码一次入库(40+ 文件)',
+ 'c17d7dc..e6739c3 2026-08-07 Add files via upload ×9    [real] 08-07 一天 14 个提交, 10 条是 Upload',
+ '[recon] 2026-08-07 v1.0   fxtk 核心 + ST6201 SPI 屏驱动 + GT911 触摸 + linux_sim(SDL2)',
+ '[recon] 2026-08-07 v1.0   字库入库: cn_gray.c 34358 行 / ascii_gray16.c 2233 行',
+ '[recon] 2026-08-08 fix(st6201) SPI mode 0 只到 26MHz —— 40MHz 被 GPIO matrix 拒',
+ '[recon] 2026-08-08 fix(st6201) 像素大端 + RAMWR 期间 CS 全程拉低(每行拉高会花屏)',
+ '[recon] 2026-08-09 fix(touch)  GT911 改硬件 I2C 400kHz(软件 I2C 死在 clock stretching)',
+ '[recon] 2026-08-09 fix(touch)  0x814E 读后写 0 清标志, 否则同一点重复触发',
+ '[recon] 2026-08-10 feat(widgets) 属性宏控件链 pixel/title/call/color/value',
+ '[recon] 2026-08-10 feat(draw)    三角扇填圆 / 逐点正弦 / 真求导切线',
+ '[recon] 2026-08-11 feat(layout)  pixel(480x272) / percent / grid 三种布局',
+ 'a65b15d 2026-08-11 2.0版本主要更新                     [real]',
+ '[recon] 2026-08-11 feat(image)   RGB565 贴图 + 旋转贴图 + 图像后处理',
+ '6ac63c4 2026-08-12 2.0完整更新                        [real]',
+ '[recon] 2026-08-12 feat(demo)    12 个演示页(波形/图形/控件/图片/3D/输入/画板/压测/滚动/粒子)',
+ '[recon] 2026-08-13 perf(重绘)    脏区合并重绘 —— 静止时零重绘',
+ '[recon] 2026-08-14 feat(desktop) 输入框 / 剪贴板 / 滚轮 / 滚动条拖拽',
+ '[recon] 2026-08-15 chore(体积)   清点没人引用的 ascii_gray16 / cn_gray',
+ '5511c69 2026-08-16 v2.1更新                           [real] RGB565 → ARGB8888 / 0x0841 那一版',
+ '7d3ecb1 2026-08-16 Delete linux_sim directory         [real] ⭐ 沙盒被亲手删掉(352 行 app.c)',
+ 'af6084c..3c7f6d8 2026-08-16 Delete ×6                [real] fxtk_st6201/fxtk_touch/cn_gray/ascii_gray16',
+ '82ab0d6 2026-08-30 v2.2                               [real]',
+ 'ae333ef 2026-08-30 v2.2更新                            [real]',
+ '85b9d40 2026-09-06 fxtk v2.3                          [real]',
+ 'd55922a 2026-09-06 Windows 交叉编译依赖自举             [real]',
+ '146a68d 2026-09-06 体积优化 Linux 154->101KB / Win 801->183KB [real]',
+ 'caf1f46 2026-09-06 修复交叉编译                        [real]',
+];
+const GITSHA=[
+ '$ for f in fxtk.c fxtk_st6201.c fxtk_touch.c; do git show 6b1140d:components/fxtk/$f | sha1sum; done',
+ '07783e7e5ad6934f6d8691be72683039fe93a3a1  -  fxtk.c',
+ '2223ea224b2e331521b7d2985d863708a9d43bc9  -  fxtk_st6201.c',
+ '858f6875e78749ab763aca25bfd5bb07877ffd75  -  fxtk_touch.c',
+ '# 上面三个 sha1 是直接从本仓库 6b1140d 算出来的(可复核), 不是编的',
+];
+/* ==================== 左上两块流: git 历史(慢) + 终端(刷屏) ====================
+   原来是"一条流混着滚"(13 行/秒 —— git 条目 0.5 秒就飞过去)。现在拆成两块, 各滚各的:
+     ① #gitfeed  git 历史流 —— 1.9s 推进一条(≈0.53 行/秒): hash + 日期 + 一句话, 看得清;
+     ② #log      终端流     —— 90 行/秒(60fps 下 ≈1.5 行/帧): 要的就是刷屏。
+   终端流行首 = 出处口径(沿用本页 CHATSRC 的诚实口径: 没有出处的不许当真数字):
+     [real] = 本项目真实跑过/真实抓到的行: 命令与输出取自 mv/pv/scripts/{07,08,10,11,20} 与
+              mv/pv/forensics/(24 个文件), 数字与 mv/CONTEXT.md / README.md 口径一致
+              (68-74fps · 2820 控件 · 13.4ms/frame · 385,912 B · 24 files · 217 commits · HEAD 3752e20 2026-10-10);
+     [sim]  = 示意行: 这台机器上没跑过(apt-get / pip 的下载与解包进度、CMake-IDF 进度、cc1 告警、
+              演示用的"报错 + 修复"对), 数字只用来把工程量演出来, 不代表本项目实测值。
+   两块都只由 t 累计推进(与原来一致: 升序渲染可重跑); DOM 只留最后 N 行, 不随片长增长。 */
+const GITLATE=[
+ '33b7136 2026-09-12 P2.1+P2.2: sokol 后端打通 (与 SDL 像素级对照 <1%)            [real]',
+ 'f189a6d 2026-09-12 渲染性能: 2816 控件压测 13.25 -> 9.31 ms/帧 (75 -> 107 fps)  [real]',
+ 'cec3b00 2026-09-13 fix(核心): 立即重绘不擦背景 -> 拖滑杆留一串滑块残影          [real] 用户报的"脏区未清除"根因',
+ '6d81e01 2026-09-13 feat: sokol 转默认后端(SDL2 降为遗留) + 粒子页 40MB 改按需    [real]',
+ '9a633b3 2026-09-13 feat(P6)+fix: Windows 单 exe 无 DLL 达标(sokol/GLCORE)       [real]',
+ '34e9f29 2026-09-13 feat(sokol 裁剪): 中文输入法打通(XIM + XFilterEvent)         [real]',
+ '4837d08 2026-09-19 perf+size(v2.4.3): 控件池 16384->8192 (.bss 16.6->14.1MB)    [real] 2820 控件 8.70ms 不受影响',
+ '043175e 2026-09-19 chore(轻量化): 删 2 个未引用的 sokol 头 + CFLAGS 加 -DNDEBUG  [real] 实测 0KB 变化',
+ 'f910ceb 2026-09-19 docs+exp: 实测否证"压测页强制整画布重绘是性能根源"            [real] 少画 1/3 控件, 帧率没变',
+ 'a393f1d 2026-10-10 feat(v2.5): 单窗口桌面行为 —— 去标题栏/置顶/移动/居中        [real]',
+ 'beda94a 2026-10-10 feat(v2.5): 并行 for (CPU 多线程) —— 叫 par, 不叫 gpu        [real]',
+ 'e31fc20 2026-10-10 feat(v2.5): 高 DPI —— high_dpi + 缩放按逻辑宽算(必须配对)    [real]',
+ 'f5a89af 2026-10-10 feat(v2.5): 触摸手势(单指) + 源清单第 3 次漏改 -> 自动发现    [real]',
+ '3a77717 2026-10-10 feat(v2.5): 弹性布局 flex 子集 · 2640 组随机穷举自检         [real]',
+ 'ff1afac 2026-10-10 feat(v2.5): SVG 子集 -> canvas · 61 项无头自检               [real]',
+ 'a9095a4 2026-10-10 perf(v2.5): stb 编解码改编译期可选 + 删死代码(唯一警告)      [real]',
+ '9df24a7 2026-10-10 docs(v2.5): 单窗口行为实测结论 + 两条使用铁律 + 体积代价 0    [real]',
+ 'a2cdab3 2026-10-10 docs(v2.5): 更正帧率瓶颈结论 —— CPU 画控件 96%, 不是上传     [real]',
+ '426a741 2026-10-10 chore: .gitignore 补 v2.5 三个自检产物                       [real]',
+ '3752e20 2026-10-10 docs+test(v2.5): 新功能可视化演示 + 无头证据收集             [real] HEAD · 217 commits',
+];
+function gitFeed(){
+  const out=[{c:'p',s:'$ git -C fxtk-pc log --reverse --format="%h %ad %s" --date=short   # v1.0 -> HEAD'}];
+  for(const l of GITRECON) out.push({c:(l.indexOf('[recon]')>=0?'y':(l.charAt(0)==='#'?'o':'g')),s:l});
+  for(const l of GITLATE) out.push({c:'g',s:l});
+  out.push({c:'y',s:'# [recon] = 按当时代码状态重建的展示层叙述(无原始 hash); 其余 [real] 都能在本仓库 git show 到'});
+  for(const l of GITSHA) out.push({c:(l.charAt(0)==='#'?'o':'g'),s:l});
+  return out;
+}
+function logFeed(){
+  /* 八块按 4 行一组轮转交织 —— 像好几个终端同时在刷; "报错 + 修复"成对放在偶数下标上, 不会被拆开 */
+  const P='user@user-laptop-ubuntu:~$ ', REAL=[], APT=[], PIP=[], BUILD=[], ERRS=[], IDF=[], TEST=[], REND=[];
+  const put=function(a,c,s){ a.push({c:c,s:s}); };
+  /* ---- [real] 本项目真跑过的(07 取回原版 / 08 录屏 / 10-11 取证 / 20 出片) ---- */
+  put(REAL,'p',P+'bash mv/pv/scripts/07_restore_rt.sh');
+  put(REAL,'g','[real] 已取出 fxtk-rt@48c2ef9 -> mv/pv/rt_sim/orig');
+  put(REAL,'g','[real] fxtk.c fxtk_draw.c fxtk_font.c fxtk_widgets.c fxtk_st6201.c fxtk_touch.c cn_gray.c');
+  put(REAL,'g','[real] [ OK ] fxtk_sim 480x272 online');
+  put(REAL,'g','[real] [ OK ] fxtk-rt@48c2ef9 restored (24 files)');
+  put(REAL,'g','[real] [ OK ] sha1 verified: 24 files');
+  put(REAL,'g','[real] [ OK ] sim_driver.c built -> fxtk_rt_sim');
+  put(REAL,'p',P+'bash mv/pv/scripts/08_capture_rt.sh');
+  put(REAL,'g','[real] [ OK ] xdotool: pages / slider / keypad');
+  put(REAL,'g','[real] $ xdotool search --name fxtk | head -1');
+  put(REAL,'g','[real] $ xdotool mousemove --sync 240 136; xdotool mousedown 1; sleep 0.13; xdotool mouseup 1');
+  put(REAL,'g','[real] $ ffmpeg -y -f x11grab -framerate 30 -video_size 480x272 -i :99 rt_orig_ui.mp4');
+  put(REAL,'g','[real] [ OK ] rt_orig_pages.mp4  360 frames');
+  put(REAL,'g','[real] [ OK ] rt_orig_ui.mp4  420 frames');
+  put(REAL,'p',P+'bash mv/pv/scripts/10_forensics.sh; bash mv/pv/scripts/11_forensics2.sh');
+  put(REAL,'g','[real] $ git show 7d3ecb1^:linux_sim/app.c | wc -l  ->  352');
+  put(REAL,'g','[real] decoration_truth.txt deleted_dirs.txt diff_del_lines.txt dpi_truth.txt flex_truth.txt');
+  put(REAL,'g','[real] frame_extents.txt ghost_fix.txt git_count.txt git_first.txt git_last.txt honesty_marks.txt');
+  put(REAL,'g','[real] perf_truth.txt pool_half.txt sandbox_delete.txt sandbox_existed.txt size_now.txt');
+  put(REAL,'g','[real] slim_commit.txt sokol_switch.txt svg_truth.txt touch_truth.txt usb_fail.txt');
+  put(REAL,'g','[real] v25_ten.txt wayland_zero.txt window_truth.txt');
+  put(REAL,'g','[real] $ git log --oneline | wc -l  ->  217');
+  put(REAL,'g','[real] [ OK ] bench 1280x720  68-74 fps');
+  put(REAL,'g','[real] 2820 widgets · 13.4 ms/frame');
+  put(REAL,'g','[real] 385912  demo-main/fxtk_sim');
+  put(REAL,'g','[real] [ OK ] git: 216 commits  2026-08-07 -> 2026-10-10');
+  put(REAL,'g','[real] [ OK ] worktrees: v1.0 v2.0 v2.1 v2.2 v2.3 v2.4');
+  put(REAL,'g','[real] [ OK ] git log v1.0..v2.3  39 commits (12 条 Add files via upload)');
+  put(REAL,'g','[real] [ OK ] recon: v1.0->v2.3 展示层重建 16 条 · 未改写仓库历史');
+  put(REAL,'y','[real] [WARN] ttyUSB0 not found');
+  put(REAL,'y',"[real] ls: 无法访问 '/dev/ttyUSB0': 没有那个文件或目录");
+  put(REAL,'y','[real] mv/pv/scripts/11_forensics2.sh: 行 6: idf.py: 未找到命令');
+  put(REAL,'y','[real] _NET_FRAME_EXTENTS:  not found.');
+  put(REAL,'y','[real] [WARN] sapp_dpi_scale() = 1.000');
+  put(REAL,'y','[real] 图形页 480x272 下有肉眼可见的锯齿 —— 锯齿我没绕过去, 就让它在那儿');
+  put(REAL,'p',P+'bash mv/pv/scripts/20_render.sh');
+  put(REAL,'g','[real] $ ffmpeg -y -framerate 30 -pattern_type glob -i parts/chunk00/*.png -c:v libx264 -crf 14 part00.mp4');
+  put(REAL,'g','[real] $ ffmpeg -y -i out/film_silent.mp4 -i audio/source.m4a -c:v copy -c:a aac -b:a 192k out/720p.mp4');
+  put(REAL,'g','[real] 1920x1080 · 30fps · h264 crf14 · 217.34s  (source_aligned.m4a = 成片音轨)');
+  /* ---- [sim] apt: 依赖就是 Makefile 里那串(SDL2/SDL2_ttf/SDL2_image/EGL/GLESv2/X11) ---- */
+  const APKG=[['build-essential','12.10ubuntu1','4,750 B'],['pkg-config','1.8.1-2build1','53.9 kB'],
+    ['cmake','3.28.3-1build7','11.4 MB'],['ninja-build','1.11.1-2','127 kB'],['git','1:2.43.0-1ubuntu7.2','3,632 kB'],
+    ['curl','8.5.0-2ubuntu10.6','227 kB'],['libsdl2-dev','2.30.0+dfsg-1ubuntu3.1','1,024 kB'],
+    ['libsdl2-ttf-dev','2.22.0+dfsg-1','38.4 kB'],['libsdl2-image-dev','2.8.2+dfsg-1build2','172 kB'],
+    ['libegl1-mesa-dev','24.0.9-0ubuntu0.3','25.3 kB'],['libgles2-mesa-dev','24.0.9-0ubuntu0.3','5,982 B'],
+    ['libx11-dev','2:1.8.7-1build1','712 kB'],['libxext-dev','2:1.3.4-1build2','112 kB'],
+    ['libxrandr-dev','2:1.5.4-1build1','32.1 kB'],['libxi-dev','2:1.8.1-1build1','245 kB'],
+    ['libxcursor-dev','1:1.2.1-1build2','35.4 kB'],['libxinerama-dev','2:1.1.4-1build3','22.0 kB'],
+    ['x11-utils','7.7+6build2','164 kB'],['xdotool','1:3.20160805.1-5build1','62.3 kB'],
+    ['xvfb','2:21.1.12-1ubuntu1.3','784 kB'],['imagemagick','8:6.9.12.98+dfsg1-5.2ubuntu0.1~esm15','3,120 kB'],
+    ['ffmpeg','7:6.1.1-3ubuntu5+esm13','1,842 kB'],['python3-numpy','1:1.26.4+ds-6ubuntu1','4,654 kB'],
+    ['python3-pil','10.2.0-1build1','982 kB']];
+  put(APT,'o','[sim] '+P+'sudo apt-get install -y build-essential cmake ninja-build git curl');
+  put(APT,'o','[sim] Reading package lists... Done');
+  put(APT,'o','[sim] Building dependency tree... Done');
+  put(APT,'o','[sim] The following NEW packages will be installed:');
+  put(APT,'o','[sim]   build-essential cmake ninja-build git curl libsdl2-dev libsdl2-ttf-dev');
+  put(APT,'o','[sim]   libsdl2-image-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev libxext-dev');
+  put(APT,'o','[sim]   libxrandr-dev libxi-dev libxcursor-dev libxinerama-dev x11-utils xdotool xvfb');
+  put(APT,'o','[sim]   imagemagick ffmpeg python3-numpy python3-pil');
+  for(let i=0;i<APKG.length;i++) put(APT,'o','[sim] Get:'+(i+1)+' http://archive.ubuntu.com/ubuntu noble/universe amd64 '+APKG[i][0]+' amd64 '+APKG[i][1]+' ['+APKG[i][2]+']');
+  for(let i=0;i<APKG.length;i+=3) put(APT,'o','[sim] Fetched '+(2.4*i+18.2).toFixed(1)+' MB in '+(2+i%6)+'s ('+Math.round(1180+(i*211)%2600)+' kB/s)');
+  for(let i=0;i<APKG.length;i++) put(APT,'o','[sim] Selecting previously unselected package '+APKG[i][0]+':amd64.');
+  for(let i=0;i<APKG.length;i++) put(APT,'o','[sim] Unpacking '+APKG[i][0]+' ('+APKG[i][1]+') ...');
+  for(let i=0;i<APKG.length;i++) put(APT,'o','[sim] Setting up '+APKG[i][0]+' ('+APKG[i][1]+') ...');
+  put(APT,'o','[sim] Processing triggers for libc-bin (2.39-0ubuntu8.6) ...');
+  put(APT,'o','[sim] Processing triggers for man-db (2.12.0-4build2) ...');
+  /* ---- [sim] pip ---- */
+  const PYPKG=[['numpy','2.1.3','cp312-cp312-manylinux_2_17_x86_64','1','13.2 MB'],
+               ['pillow','11.0.0','cp312-cp312-manylinux_2_28_x86_64','2','4.5 MB'],
+               ['playwright','1.48.0','py3-none-manylinux1_x86_64','3','44.7 MB']];
+  put(PIP,'o','[sim] '+P+'pip install -r requirements.txt');
+  for(const m of PYPKG){
+    put(PIP,'o','[sim] Collecting '+m[0]+' (from -r requirements.txt (line '+m[3]+'))');
+    put(PIP,'o','[sim]   Downloading '+m[0]+'-'+m[1]+'-'+m[2]+'.whl ('+m[4]+')');
+    put(PIP,'o','[sim]      |########################################| '+m[4]+' '+(3+m[4].length%5)+'.'+(m[4].length%9)+' MB/s');
+    put(PIP,'o','[sim] Installing collected packages: '+m[0]); }
+  put(PIP,'o','[sim] Successfully installed numpy-2.1.3 pillow-11.0.0 playwright-1.48.0');
+  put(PIP,'o','[sim] WARNING: You are using pip version 24.0; however, 24.2 is available.');
+  /* ---- [sim] gcc/CMake: 调试档(-O2 -g, Makefile 注释里写的那条) + 默认档(-Os -flto ...) ---- */
+  const CORE=['fxtk.c','fxtk_draw.c','fxtk_widgets.c','fxtk_font.c','fxtk_effects.c','fxtk_extra.c',
+              'fxtk_backends.c','fxtk_par.c','fxtk_gesture.c','fxtk_flex.c','fxtk_svg.c'];
+  const PCT=[8,17,25,33,42,50,58,67,75,83,100];
+  put(BUILD,'p',P+'make -C demo-main -j8 CFLAGS="-O2 -g" LDFLAGS= -DNDEBUG');
+  for(let i=0;i<CORE.length;i++){
+    put(BUILD,'o','[sim] gcc -O2 -g -I../components/fxtk -I../drivers -c ../components/fxtk/'+CORE[i]+' -o build/'+CORE[i].slice(0,-2)+'.o');
+    put(BUILD,'o','[sim] [ '+PCT[i]+'%] Building C object CMakeFiles/fxtk_sim.dir/components/fxtk/'+CORE[i]+'.o'); }
+  put(BUILD,'y',"[sim] cc1: warning: '-Wunused-but-set-variable' is enabled by default [-Wenabled-by-default]");
+  put(BUILD,'y',"[sim] cc1: warning: '-Wmaybe-uninitialized' may go away in a future release [-Wmaybe-uninitialized]");
+  put(BUILD,'y','[sim] ../components/fxtk/fxtk_font.c:212:9: warning: ignoring return value of ‘fread’ [-Wunused-result]');
+  put(BUILD,'o','[sim] [100%] Linking C executable fxtk_sim');
+  put(BUILD,'g','[real] built fxtk_sim · SDL2 驱动 · 480x272 基准坐标');
+  put(BUILD,'p',P+'make -C demo-main -j8');
+  put(BUILD,'o','[sim] gcc -Os -flto -ffunction-sections -fdata-sections -c ../components/fxtk/fxtk.c -o build/fxtk.o');
+  put(BUILD,'o','[sim] [100%] Linking C executable fxtk_sim  (-Wl,--gc-sections -Wl,--icf=all)');
+  put(BUILD,'g','[real] 体积优化 Linux 154->101KB / Win 801->183KB  (146a68d)');
+  /* ---- [sim] 报错 + 修复: 每条报错的下一行就是修它的那一行 ---- */
+  put(ERRS,'r',"[sim] ../components/fxtk/fxtk_touch.c:118:14: error: implicit declaration of function 'fx_touch_read' [-Wimplicit-function-declaration]");
+  put(ERRS,'o','[sim] + int fx_touch_read(int *x, int *y, int *pressed);   /* 补进 fxtk_internal.h */');
+  put(ERRS,'r',"[sim] ../components/fxtk/fxtk_par.c:14:5: error: multiple definition of 'fx_cpu_count'; fxtk.c:31: first defined here");
+  put(ERRS,'o','[sim] - int fx_cpu_count(void);   /* 删掉重复定义 —— make test 直接红 */');
+  put(ERRS,'r',"[sim] /usr/bin/ld: build/main.o: in function _start: undefined reference to 'app_main'");
+  put(ERRS,'o','[sim] + int app_main(void){ return fx_app_run(&g_app); }   /* main/ 入口补齐 */');
+  put(ERRS,'r','[sim] make: *** [Makefile:23: fxtk_sim] Error 1');
+  put(ERRS,'o','[sim] + CORE += ../components/fxtk/fxtk_backends.c   /* 源清单手抄在 11 处, 第 3 次漏改 -> 自动发现 */');
+  put(ERRS,'r','[sim] ../components/fxtk/fxtk_draw.c:804:12: error: expected ‘;’ before ‘}’ token');
+  put(ERRS,'o','[sim] + fx_rect_fill(c, x, y, w - 1, h - 1);   /* 半开区间 -> 闭区间: 每个矩形多画的 1px */');
+  put(ERRS,'r',"[sim] ../components/fxtk/fxtk_extra.c:88:13: error: 'png_sink_write' defined but not used [-Werror=unused-function]");
+  put(ERRS,'o','[sim] - static int png_sink_write(...)   /* 死代码, 删 */');
+  put(ERRS,'r','[sim] ../components/fxtk/fxtk_svg.c:512:22: error: ‘n_arc’ undeclared (first use in this function)');
+  put(ERRS,'o','[sim] + n_arc++;   /* 圆弧 A/a 明确不支持 —— 跳过并计数, 不装做支持 */');
+  put(ERRS,'r',"[sim] ../components/fxtk/fxtk.c:1180:9: error: 'fx_gt911_read' undeclared (first use in this function)");
+  put(ERRS,'o','[sim] + static int fx_gt911_read(int *x, int *y, int *p);   /* GT911 只保留接口级冒烟 */');
+  /* ---- [sim] ESP32 侧: idf.py(本机没装工具链, 只有接口级冒烟) ---- */
+  put(IDF,'p',P+'idf.py build');
+  put(IDF,'o','[sim] Executing action: all (targets: esp32, ...)');
+  put(IDF,'o','[sim] [ 42%] Building C object esp-idf/main/CMakeFiles/__idf_main.dir/main/app_main.c.obj');
+  put(IDF,'o','[sim] [ 67%] Building C object esp-idf/main/CMakeFiles/__idf_main.dir/components/fxtk/fxtk_st6201.c.obj');
+  put(IDF,'o','[sim] [ 88%] Building C object esp-idf/main/CMakeFiles/__idf_main.dir/components/fxtk/fxtk_touch.c.obj');
+  put(IDF,'o','[sim] [100%] Linking C static library libmain.a');
+  put(IDF,'o','[sim] Project build complete. To flash, run: idf.py -p /dev/ttyUSB0 flash monitor');
+  put(IDF,'p',P+'idf.py -p /dev/ttyUSB0 flash monitor');
+  put(IDF,'o','[sim] Serial port /dev/ttyUSB0');
+  put(IDF,'r','[sim] A fatal error occurred: Could not open /dev/ttyUSB0, the port does not exist');
+  put(IDF,'g','[real] $ grep -n "touch_read" components/fxtk/fxtk.h | head -3');
+  put(IDF,'g','[real] 280:    int  (*touch_read)(int *x, int *y, int *pressed);');
+  put(IDF,'g','[real] 401: * 【只支持单指】当前驱动接口 touch_read(x,y,pressed) 只给一个触点');
+  /* ---- [sim] 自检(数字是 v2.5 的真实口径: 2640 组 / 48048 组 / 61 项) ---- */
+  put(TEST,'p',P+'make -C demo-main test');
+  put(TEST,'o','[sim] flex 子集: 2640 组随机穷举自检 ... 全过');
+  put(TEST,'o','[sim] 高 DPI: 48048 组对照 (dpi=1.0 时与旧公式逐字节一致) ... 全过');
+  put(TEST,'o','[sim] 手势: 单击/双击/长按/拖拽/上下左右 ... 通过');
+  put(TEST,'o','[sim] SVG 子集: 61 项自检 ... 通过 (A/a S/s T/t 明确不支持, 跳过并计数)');
+  put(TEST,'o','[sim] 颜色契约断言 ... 通过');
+  put(TEST,'g','[real] $ grep -n "fx_flex_apply" components/fxtk/fxtk.h | head -3');
+  put(TEST,'g','[real] 110:#define FX_POS_FLEX  4   /* v2.5: 坐标由 fx_flex_apply 写入, 布局期不重算 */');
+  put(TEST,'g','[real] 453: *     fx_flex_apply(panel, it, 3, FX_FLEX_ROW, 8, 6,');
+  /* ---- [sim] 出片进度 ---- */
+  put(REND,'o','[sim] == chunk 07: frames 1260..1439  t=42.0..47.97');
+  put(REND,'o','[sim] == chunk 08: frames 1440..1619  t=48.0..53.97');
+  put(REND,'o','[sim] == chunk 09: frames 1620..1799  t=54.0..59.97');
+  put(REND,'o','[sim] frame=  360 fps= 42 q=14.0 size=   18432kB time=00:00:12.00 bitrate=12582.9kbits/s');
+  put(REND,'o','[sim] frame= 1200 fps= 44 q=14.0 size=   61440kB time=00:00:40.00 bitrate=12582.9kbits/s');
+  put(REND,'o','[sim] frame= 6519 fps= 45 q=14.0 size=  333158kB time=00:03:37.33 bitrate=12582.9kbits/s');
+  put(REND,'g','[real] [ OK ] bench 1280x720  68-74 fps');
+  put(REND,'g','[real] ls -la mv/pv/out');
+  /* 4 行一组轮转交织; 第二遍把块序转 3 位, 循环起来不完全重样 */
+  const blocks=[REAL,APT,PIP,BUILD,ERRS,IDF,TEST,REND], out=[];
+  for(let pass=0;pass<2;pass++){ const bs=blocks.slice(pass*3).concat(blocks.slice(0,pass*3));
+    for(let k=0,more=true;more;k+=4){ more=false;
+      for(let b=0;b<bs.length;b++){ const blk=bs[b];
+        for(let i=k;i<k+4&&i<blk.length;i++) out.push(blk[i]);
+        if(blk.length>k+4) more=true; } } }
+  return out;
+}
+let FEED=[], feu=0, fec=0, GFEED=[], gfu=0, gfc=0;
+const TERM_LPS=90, GIT_DT=1.9, TERMCAP=420, GITCAP=14;
+const LOGIN=D('login'), GITIN=D('gitin');
+function logAppend(l){ const d=document.createElement('div');
+  d.className=(l.c==='p'?'wht':(l.c==='g'?'ok':(l.c==='y'?'wn':(l.c==='r'?'er':'')))); d.textContent=l.s;
+  LOGIN.appendChild(d); while(LOGIN.childElementCount>TERMCAP) LOGIN.removeChild(LOGIN.firstChild); }
+function gitAppend(l){ const d=document.createElement('div');
+  d.className=(l.c==='p'?'wht':(l.c==='g'?'ok':(l.c==='y'?'wn':(l.c==='r'?'er':'')))); d.textContent=l.s;
+  GITIN.appendChild(d); while(GITIN.childElementCount>GITCAP) GITIN.removeChild(GITIN.firstChild); }
+/* ==================== ASCII 大字（用浏览器字体栅格化后采样成字符画） ==================== */
+const artCache={};
+function asciiLines(text,cols,rows,weight){
+  const key=text+'|'+cols+'|'+rows+'|'+(weight||'');
+  if(artCache[key]) return artCache[key];
+  const cv=document.createElement('canvas'); cv.width=cols*8; cv.height=rows*14;
+  const g=cv.getContext('2d'); g.fillStyle='#000'; g.fillRect(0,0,cv.width,cv.height);
+  g.fillStyle='#fff'; g.textAlign='center'; g.textBaseline='middle';
+  let fs=cv.height*0.86; g.font=(weight||'900')+' '+fs+'px "DejaVu Sans Mono",monospace';
+  const w=g.measureText(text).width;
+  if(w>cv.width*0.96){ fs=fs*(cv.width*0.96)/w; g.font=(weight||'900')+' '+fs+'px "DejaVu Sans Mono",monospace'; }
+  g.fillText(text,cv.width/2,cv.height/2);
+  const d=g.getImageData(0,0,cv.width,cv.height).data, ramp=' .:-=+*#%@', out=[];
+  for(let y=0;y<rows;y++){ let line='';
+    for(let x=0;x<cols;x++){ let sum=0,n=0;
+      for(let yy=y*14;yy<y*14+14;yy+=4) for(let xx=x*8;xx<x*8+8;xx+=2){ const i=(yy*cv.width+xx)*4; sum+=d[i]; n++; }
+      line+=ramp[Math.min(ramp.length-1,Math.floor((sum/n)/255*ramp.length*1.55))]; }
+    out.push(line); }
+  artCache[key]=out; return out;
+}
+function drawArt(el,text,cols,rows,weight,color){
+  const lines=asciiLines(text,cols,rows,weight);
+  el.textContent=lines.join('\n'); el.style.color=color||'#8b949e';
+  const box=el.parentElement.getBoundingClientRect();
+  const bw=box.width||1920, bh=box.height||200;
+  el.style.fontSize=(bw/(cols*0.60205)).toFixed(2)+'px';
+  el.style.lineHeight=Math.max(6,(bh/rows)).toFixed(2)+'px';
+}
+
+/* ==================== 字幕 / token 带 ==================== */
+/* ---- tokenizer 标签: 按"剧情日期"切换(和页面里那条日期线同源, 不另造一套) ----
+   锚点就是页面自己写着的那两个日期:
+     A) 27.75s  CHATSRC "── 2026-08-07 · v1.0 入库 ──"  (= fe7a2c5 2026-08-07 Initial commit)
+     B) 204.24s CHATSRC "$ git log ... 3752e20 2026-10-10" (= statusbar 里的 HEAD 日期)
+   两点线性: 1 天 = (204.24-27.75)/64 天 = 2.75766s; 于是
+     2026-09-08 (A 之后第 32 天) -> t = 27.75 + 32*2.75766 = 115.99s (renderMain 轴; 成片轴 = 115.99 + LYOFF)
+   切换点: t <  115.99s -> tokenizer: deepseek-v4-flash-0731
+           t >= 115.99s -> tokenizer: deepseek-v4.1-flash
+   不做突变: 切点前后各 0.3s 显示过渡态 "deepseek-v4-flash-0731 → deepseek-v4.1-flash", 透明度随 |t-115.99| 升降(纯 t 函数, 逐帧可重跑)。 */
+const PLOT_T0=27.75, PLOT_DAY0=Date.UTC(2026,7,7), PLOT_SPD=(204.24-27.75)/64;
+const TOKSW=PLOT_T0+32*PLOT_SPD;                     /* 2026-09-08 -> t=115.99s */
+const TOKSW_FADE=0.3, TKM_OLD='deepseek-v4-flash-0731', TKM_NEW='deepseek-v4.1-flash';
+const RBTK=D('rb-tk');
+function plotDate(t){ return new Date(PLOT_DAY0+Math.floor((t-PLOT_T0)/PLOT_SPD)*86400000).toISOString().slice(0,10); }
+function tokModel(t){ return t>=TOKSW? TKM_NEW : TKM_OLD; }
+
+/* ==================== 真实 tokenizer 词表 ID (预计算静态表, 运行时零网络) ====================
+   页面里的两个 tokenizer 名字是"剧情名"(虚构), 各自绑定一份真实 tokenizer.json:
+     deepseek-v4-flash-0731 <- DeepSeek-V4 系列共享词表 (deepseek-ai/DeepSeek-V4-Pro 与
+                              deepseek-ai/DeepSeek-V4-Flash 共享; 来源 AndersonBY/deepseek-tokenizer
+                              @525044c24386953b542ef5262d0c69d309a5d67f, vocab 129280, 6,367,146 B)
+     deepseek-v4.1-flash    <- deepseek-ai/DeepSeek-V3 (v4.1 词表未公开, 暂用 V3 替身; vocab 128815, 7,847,652 B)
+   来源 URL / sha256 / 完整口径 见 mv/pv/TOKENIZER.md。
+   预计算: 对 87 行歌词逐词 encode(" " + word) (词前带空格, 与真实文本的 BPE 上下文一致;
+   add_special_tokens=False)。RB_IDS[模型][行][词] = 真实 token ID 数组; RB_TOKS 为对应片段。
+   运行时不联网、不 import 任何库、仍是纯 t 函数; 同一输入同一输出, 确定性可复算。
+   注: V4 与 V3 共享同一份 128000 BPE 基表, 故本片语料上 V4 逐词 ID 与 V3 完全一致(实测 442 片全等);
+   V4 多出的只是 added special tokens (V4 1283 个 vs V3 818 个)。
+   诚实标注: deepseek-v4-flash-0731 / deepseek-v4.1-flash 只出现在页面显示名里, 词表真实来源以
+   RB_SRC / 元素 title / TOKENIZER.md 为准, 不得把真实词表说成就是那个虚构模型。 */
+const RB_LINE_TEXTS=["world.execute(me); - Mili","Switch on the power line","Remember to put on protection","Lay down your pieces","And let's begin object creation","Fill in my data parameters initialisation","Setup our new world","And let's begin the simulation","If I'm a set of points","Then I will give you my dimension","If I'm a circle","Then I will give you my circumference","If I'm a sine wave","Then you can sit on all my tangents","If I approach infinity","Then you can be my limitations","Switch my current","To AC to DC","And then blind my vision","So dizzy so dizzy","Oh we can travel","To A.D to B.C","And we can unite","So deeply so deeply","If I can","If I can give you all the stimulations","Then I can","Then I can be your only satisfaction","If I can make you happy","I will run the execution","Though we are trapped","In this strange strange simulation","If I'm an eggplant","Then I will give you my nutrients","If I'm a tomato","Then I'll give you antioxidants","If I'm a tabby cat","Then I will purr for your enjoyment","If I'm the only god","Then you're the proof of my existence","Switch my gender","To F to M","And then do whatever","From AM to PM","Oh switch my role","To S to M","So we can enter","The trance the trance","If I can","If I can feel your vibrations","Then I can","Then I can finally be completion","Though you have left","You have left","You have left","You have left","You have left","You have left me in isolation","If I can","If I can erase all the pointless fragments","Then maybe","Then maybe you won't leave me so disheartened","Challenging your god","You have made some illegal arguments","Execution execution execution execution","Execution execution execution execution","Execution execution execution execution","Ein Dos Trois Ne Fem Liu","Execution","If I can","If I can give them all the execution","Then I can","Then I can be your only execution","If I can have you back","I will run the execution","Though we are trapped","We are trapped ah","I've studied","I've studied how to properly lo-o-ove","Question me","Question me I can answer all lo-o-ove","I know the algebraic expression of lo-o-ove","Though you are free","I am trapped","Trapped in lo-o-ove","Execution","]"];
+const RB_IDS={"deepseek-v4-flash-0731":[[[2058,59959,10,2083,3171],[565],[373,3421]],[[36836],[377],[270],[2333],[2562]],[[20534],[304],[3065],[377],[8505]],[[47748],[1910],[782],[11295]],[[1890],[2513,734],[4170],[2873],[11536]],[[41223],[295],[1026],[1499],[8252],[6069,6797]],[[59887],[1132],[1017],[2058]],[[1890],[2513,734],[4170],[270],[16864]],[[2052],[342,4571],[260],[1341],[294],[4365]],[[5715],[342],[759],[3475],[440],[1026],[16444]],[[2052],[342,4571],[260],[13256]],[[5715],[342],[759],[3475],[440],[1026],[55309]],[[2052],[342,4571],[260],[17463],[9605]],[[5715],[440],[588],[10434],[377],[710],[1026],[10615,749]],[[2052],[342],[4090],[52683]],[[5715],[440],[588],[366],[1026],[15588]],[[36836],[1026],[2573]],[[2600],[14570],[304],[14366]],[[1890],[1539],[18054],[1026],[10048]],[[3016],[96865],[832],[96865]],[[11073],[579],[588],[5901]],[[2600],[334,5249],[304],[406,3533]],[[1890],[579],[588],[62951]],[[3016],[17185],[832],[17185]],[[2052],[342],[588]],[[2052],[342],[588],[3475],[440],[710],[270],[8680,7394]],[[5715],[342],[588]],[[5715],[342],[588],[366],[782],[1353],[17873]],[[2052],[342],[588],[1635],[440],[8846]],[[342],[759],[2632],[270],[16846]],[[19840],[579],[477],[36511]],[[660],[566],[17759],[17759],[16864]],[[2052],[342,4571],[411],[122938]],[[5715],[342],[759],[3475],[440],[1026],[21018]],[[2052],[342,4571],[260],[36823]],[[5715],[342,5922],[3475],[440],[56903]],[[2052],[342,4571],[260],[12826,2816],[7539]],[[5715],[342],[759],[2805,84],[362],[782],[47727]],[[2052],[342,4571],[270],[1353],[10961]],[[5715],[440,4750],[270],[12745],[294],[1026],[11933]],[[36836],[1026],[11339]],[[2600],[447],[304],[373]],[[1890],[1539],[696],[11782]],[[5795],[7167],[304],[4748]],[[11073],[8953],[1026],[3615]],[[2600],[327],[304],[373]],[[3016],[579],[588],[6601]],[[455],[841,730],[270],[841,730]],[[2052],[342],[588]],[[2052],[342],[588],[2929],[782],[62583]],[[5715],[342],[588]],[[5715],[342],[588],[8377],[366],[18967]],[[19840],[440],[611],[3001]],[[2042],[611],[3001]],[[2042],[611],[3001]],[[2042],[611],[3001]],[[2042],[611],[3001]],[[2042],[611],[3001],[678],[295],[22703]],[[2052],[342],[588]],[[2052],[342],[588],[71288],[710],[270],[98264],[31813]],[[5715],[10796]],[[5715],[10796],[440],[5646,1664],[6559],[678],[832],[787,37838,4371]],[[18122,62919],[782],[10961]],[[2042],[611],[1960],[1093],[21009],[14904]],[[73815],[16846],[16846],[16846]],[[73815],[16846],[16846],[16846]],[[73815],[16846],[16846],[16846]],[[15218],[58865],[25443,278],[3971],[21883],[20665]],[[73815]],[[2052],[342],[588]],[[2052],[342],[588],[3475],[1066],[710],[270],[16846]],[[5715],[342],[588]],[[5715],[342],[588],[366],[782],[1353],[16846]],[[2052],[342],[588],[611],[440],[1559]],[[342],[759],[2632],[270],[16846]],[[19840],[579],[477],[36511]],[[1350],[477],[36511],[27848]],[[342,5270],[11442]],[[342,5270],[11442],[1192],[304],[10883],[3330,28886,15,1370]],[[12742],[678]],[[12742],[678],[342],[588],[3287],[710],[3330,28886,15,1370]],[[342],[1153],[270],[41190],[5793],[294],[3330,28886,15,1370]],[[19840],[440],[477],[3080]],[[342],[1030],[36511]],[[4550,3675],[295],[3330,28886,15,1370]],[[73815]],[[6105]]],"deepseek-v4.1-flash":[[[2058,59959,10,2083,3171],[565],[373,3421]],[[36836],[377],[270],[2333],[2562]],[[20534],[304],[3065],[377],[8505]],[[47748],[1910],[782],[11295]],[[1890],[2513,734],[4170],[2873],[11536]],[[41223],[295],[1026],[1499],[8252],[6069,6797]],[[59887],[1132],[1017],[2058]],[[1890],[2513,734],[4170],[270],[16864]],[[2052],[342,4571],[260],[1341],[294],[4365]],[[5715],[342],[759],[3475],[440],[1026],[16444]],[[2052],[342,4571],[260],[13256]],[[5715],[342],[759],[3475],[440],[1026],[55309]],[[2052],[342,4571],[260],[17463],[9605]],[[5715],[440],[588],[10434],[377],[710],[1026],[10615,749]],[[2052],[342],[4090],[52683]],[[5715],[440],[588],[366],[1026],[15588]],[[36836],[1026],[2573]],[[2600],[14570],[304],[14366]],[[1890],[1539],[18054],[1026],[10048]],[[3016],[96865],[832],[96865]],[[11073],[579],[588],[5901]],[[2600],[334,5249],[304],[406,3533]],[[1890],[579],[588],[62951]],[[3016],[17185],[832],[17185]],[[2052],[342],[588]],[[2052],[342],[588],[3475],[440],[710],[270],[8680,7394]],[[5715],[342],[588]],[[5715],[342],[588],[366],[782],[1353],[17873]],[[2052],[342],[588],[1635],[440],[8846]],[[342],[759],[2632],[270],[16846]],[[19840],[579],[477],[36511]],[[660],[566],[17759],[17759],[16864]],[[2052],[342,4571],[411],[122938]],[[5715],[342],[759],[3475],[440],[1026],[21018]],[[2052],[342,4571],[260],[36823]],[[5715],[342,5922],[3475],[440],[56903]],[[2052],[342,4571],[260],[12826,2816],[7539]],[[5715],[342],[759],[2805,84],[362],[782],[47727]],[[2052],[342,4571],[270],[1353],[10961]],[[5715],[440,4750],[270],[12745],[294],[1026],[11933]],[[36836],[1026],[11339]],[[2600],[447],[304],[373]],[[1890],[1539],[696],[11782]],[[5795],[7167],[304],[4748]],[[11073],[8953],[1026],[3615]],[[2600],[327],[304],[373]],[[3016],[579],[588],[6601]],[[455],[841,730],[270],[841,730]],[[2052],[342],[588]],[[2052],[342],[588],[2929],[782],[62583]],[[5715],[342],[588]],[[5715],[342],[588],[8377],[366],[18967]],[[19840],[440],[611],[3001]],[[2042],[611],[3001]],[[2042],[611],[3001]],[[2042],[611],[3001]],[[2042],[611],[3001]],[[2042],[611],[3001],[678],[295],[22703]],[[2052],[342],[588]],[[2052],[342],[588],[71288],[710],[270],[98264],[31813]],[[5715],[10796]],[[5715],[10796],[440],[5646,1664],[6559],[678],[832],[787,37838,4371]],[[18122,62919],[782],[10961]],[[2042],[611],[1960],[1093],[21009],[14904]],[[73815],[16846],[16846],[16846]],[[73815],[16846],[16846],[16846]],[[73815],[16846],[16846],[16846]],[[15218],[58865],[25443,278],[3971],[21883],[20665]],[[73815]],[[2052],[342],[588]],[[2052],[342],[588],[3475],[1066],[710],[270],[16846]],[[5715],[342],[588]],[[5715],[342],[588],[366],[782],[1353],[16846]],[[2052],[342],[588],[611],[440],[1559]],[[342],[759],[2632],[270],[16846]],[[19840],[579],[477],[36511]],[[1350],[477],[36511],[27848]],[[342,5270],[11442]],[[342,5270],[11442],[1192],[304],[10883],[3330,28886,15,1370]],[[12742],[678]],[[12742],[678],[342],[588],[3287],[710],[3330,28886,15,1370]],[[342],[1153],[270],[41190],[5793],[294],[3330,28886,15,1370]],[[19840],[440],[477],[3080]],[[342],[1030],[36511]],[[4550,3675],[295],[3330,28886,15,1370]],[[73815]],[[6105]]]};
+const RB_TOKS={"deepseek-v4-flash-0731":[[["Ġworld",".execute","(","me",");"],["Ġ-"],["ĠM","ili"]],[["ĠSwitch"],["Ġon"],["Ġthe"],["Ġpower"],["Ġline"]],[["ĠRemember"],["Ġto"],["Ġput"],["Ġon"],["Ġprotection"]],[["ĠLay"],["Ġdown"],["Ġyour"],["Ġpieces"]],[["ĠAnd"],["Ġlet","'s"],["Ġbegin"],["Ġobject"],["Ġcreation"]],[["ĠFill"],["Ġin"],["Ġmy"],["Ġdata"],["Ġparameters"],["Ġinitial","isation"]],[["ĠSetup"],["Ġour"],["Ġnew"],["Ġworld"]],[["ĠAnd"],["Ġlet","'s"],["Ġbegin"],["Ġthe"],["Ġsimulation"]],[["ĠIf"],["ĠI","'m"],["Ġa"],["Ġset"],["Ġof"],["Ġpoints"]],[["ĠThen"],["ĠI"],["Ġwill"],["Ġgive"],["Ġyou"],["Ġmy"],["Ġdimension"]],[["ĠIf"],["ĠI","'m"],["Ġa"],["Ġcircle"]],[["ĠThen"],["ĠI"],["Ġwill"],["Ġgive"],["Ġyou"],["Ġmy"],["Ġcircumference"]],[["ĠIf"],["ĠI","'m"],["Ġa"],["Ġsine"],["Ġwave"]],[["ĠThen"],["Ġyou"],["Ġcan"],["Ġsit"],["Ġon"],["Ġall"],["Ġmy"],["Ġtang","ents"]],[["ĠIf"],["ĠI"],["Ġapproach"],["Ġinfinity"]],[["ĠThen"],["Ġyou"],["Ġcan"],["Ġbe"],["Ġmy"],["Ġlimitations"]],[["ĠSwitch"],["Ġmy"],["Ġcurrent"]],[["ĠTo"],["ĠAC"],["Ġto"],["ĠDC"]],[["ĠAnd"],["Ġthen"],["Ġblind"],["Ġmy"],["Ġvision"]],[["ĠSo"],["Ġdizzy"],["Ġso"],["Ġdizzy"]],[["ĠOh"],["Ġwe"],["Ġcan"],["Ġtravel"]],[["ĠTo"],["ĠA",".D"],["Ġto"],["ĠB",".C"]],[["ĠAnd"],["Ġwe"],["Ġcan"],["Ġunite"]],[["ĠSo"],["Ġdeeply"],["Ġso"],["Ġdeeply"]],[["ĠIf"],["ĠI"],["Ġcan"]],[["ĠIf"],["ĠI"],["Ġcan"],["Ġgive"],["Ġyou"],["Ġall"],["Ġthe"],["Ġstim","ulations"]],[["ĠThen"],["ĠI"],["Ġcan"]],[["ĠThen"],["ĠI"],["Ġcan"],["Ġbe"],["Ġyour"],["Ġonly"],["Ġsatisfaction"]],[["ĠIf"],["ĠI"],["Ġcan"],["Ġmake"],["Ġyou"],["Ġhappy"]],[["ĠI"],["Ġwill"],["Ġrun"],["Ġthe"],["Ġexecution"]],[["ĠThough"],["Ġwe"],["Ġare"],["Ġtrapped"]],[["ĠIn"],["Ġthis"],["Ġstrange"],["Ġstrange"],["Ġsimulation"]],[["ĠIf"],["ĠI","'m"],["Ġan"],["Ġeggplant"]],[["ĠThen"],["ĠI"],["Ġwill"],["Ġgive"],["Ġyou"],["Ġmy"],["Ġnutrients"]],[["ĠIf"],["ĠI","'m"],["Ġa"],["Ġtomato"]],[["ĠThen"],["ĠI","'ll"],["Ġgive"],["Ġyou"],["Ġantioxidants"]],[["ĠIf"],["ĠI","'m"],["Ġa"],["Ġtab","by"],["Ġcat"]],[["ĠThen"],["ĠI"],["Ġwill"],["Ġpur","r"],["Ġfor"],["Ġyour"],["Ġenjoyment"]],[["ĠIf"],["ĠI","'m"],["Ġthe"],["Ġonly"],["Ġgod"]],[["ĠThen"],["Ġyou","'re"],["Ġthe"],["Ġproof"],["Ġof"],["Ġmy"],["Ġexistence"]],[["ĠSwitch"],["Ġmy"],["Ġgender"]],[["ĠTo"],["ĠF"],["Ġto"],["ĠM"]],[["ĠAnd"],["Ġthen"],["Ġdo"],["Ġwhatever"]],[["ĠFrom"],["ĠAM"],["Ġto"],["ĠPM"]],[["ĠOh"],["Ġswitch"],["Ġmy"],["Ġrole"]],[["ĠTo"],["ĠS"],["Ġto"],["ĠM"]],[["ĠSo"],["Ġwe"],["Ġcan"],["Ġenter"]],[["ĠThe"],["Ġtr","ance"],["Ġthe"],["Ġtr","ance"]],[["ĠIf"],["ĠI"],["Ġcan"]],[["ĠIf"],["ĠI"],["Ġcan"],["Ġfeel"],["Ġyour"],["Ġvibrations"]],[["ĠThen"],["ĠI"],["Ġcan"]],[["ĠThen"],["ĠI"],["Ġcan"],["Ġfinally"],["Ġbe"],["Ġcompletion"]],[["ĠThough"],["Ġyou"],["Ġhave"],["Ġleft"]],[["ĠYou"],["Ġhave"],["Ġleft"]],[["ĠYou"],["Ġhave"],["Ġleft"]],[["ĠYou"],["Ġhave"],["Ġleft"]],[["ĠYou"],["Ġhave"],["Ġleft"]],[["ĠYou"],["Ġhave"],["Ġleft"],["Ġme"],["Ġin"],["Ġisolation"]],[["ĠIf"],["ĠI"],["Ġcan"]],[["ĠIf"],["ĠI"],["Ġcan"],["Ġerase"],["Ġall"],["Ġthe"],["Ġpointless"],["Ġfragments"]],[["ĠThen"],["Ġmaybe"]],[["ĠThen"],["Ġmaybe"],["Ġyou"],["Ġwon","'t"],["Ġleave"],["Ġme"],["Ġso"],["Ġdis","heart","ened"]],[["ĠChall","enging"],["Ġyour"],["Ġgod"]],[["ĠYou"],["Ġhave"],["Ġmade"],["Ġsome"],["Ġillegal"],["Ġarguments"]],[["ĠExecution"],["Ġexecution"],["Ġexecution"],["Ġexecution"]],[["ĠExecution"],["Ġexecution"],["Ġexecution"],["Ġexecution"]],[["ĠExecution"],["Ġexecution"],["Ġexecution"],["Ġexecution"]],[["ĠEin"],["ĠDos"],["ĠTro","is"],["ĠNe"],["ĠFem"],["ĠLiu"]],[["ĠExecution"]],[["ĠIf"],["ĠI"],["Ġcan"]],[["ĠIf"],["ĠI"],["Ġcan"],["Ġgive"],["Ġthem"],["Ġall"],["Ġthe"],["Ġexecution"]],[["ĠThen"],["ĠI"],["Ġcan"]],[["ĠThen"],["ĠI"],["Ġcan"],["Ġbe"],["Ġyour"],["Ġonly"],["Ġexecution"]],[["ĠIf"],["ĠI"],["Ġcan"],["Ġhave"],["Ġyou"],["Ġback"]],[["ĠI"],["Ġwill"],["Ġrun"],["Ġthe"],["Ġexecution"]],[["ĠThough"],["Ġwe"],["Ġare"],["Ġtrapped"]],[["ĠWe"],["Ġare"],["Ġtrapped"],["Ġah"]],[["ĠI","'ve"],["Ġstudied"]],[["ĠI","'ve"],["Ġstudied"],["Ġhow"],["Ġto"],["Ġproperly"],["Ġlo","-o","-","ove"]],[["ĠQuestion"],["Ġme"]],[["ĠQuestion"],["Ġme"],["ĠI"],["Ġcan"],["Ġanswer"],["Ġall"],["Ġlo","-o","-","ove"]],[["ĠI"],["Ġknow"],["Ġthe"],["Ġalgebraic"],["Ġexpression"],["Ġof"],["Ġlo","-o","-","ove"]],[["ĠThough"],["Ġyou"],["Ġare"],["Ġfree"]],[["ĠI"],["Ġam"],["Ġtrapped"]],[["ĠTra","pped"],["Ġin"],["Ġlo","-o","-","ove"]],[["ĠExecution"]],[["Ġ]"]]],"deepseek-v4.1-flash":[[["Ġworld",".execute","(","me",");"],["Ġ-"],["ĠM","ili"]],[["ĠSwitch"],["Ġon"],["Ġthe"],["Ġpower"],["Ġline"]],[["ĠRemember"],["Ġto"],["Ġput"],["Ġon"],["Ġprotection"]],[["ĠLay"],["Ġdown"],["Ġyour"],["Ġpieces"]],[["ĠAnd"],["Ġlet","'s"],["Ġbegin"],["Ġobject"],["Ġcreation"]],[["ĠFill"],["Ġin"],["Ġmy"],["Ġdata"],["Ġparameters"],["Ġinitial","isation"]],[["ĠSetup"],["Ġour"],["Ġnew"],["Ġworld"]],[["ĠAnd"],["Ġlet","'s"],["Ġbegin"],["Ġthe"],["Ġsimulation"]],[["ĠIf"],["ĠI","'m"],["Ġa"],["Ġset"],["Ġof"],["Ġpoints"]],[["ĠThen"],["ĠI"],["Ġwill"],["Ġgive"],["Ġyou"],["Ġmy"],["Ġdimension"]],[["ĠIf"],["ĠI","'m"],["Ġa"],["Ġcircle"]],[["ĠThen"],["ĠI"],["Ġwill"],["Ġgive"],["Ġyou"],["Ġmy"],["Ġcircumference"]],[["ĠIf"],["ĠI","'m"],["Ġa"],["Ġsine"],["Ġwave"]],[["ĠThen"],["Ġyou"],["Ġcan"],["Ġsit"],["Ġon"],["Ġall"],["Ġmy"],["Ġtang","ents"]],[["ĠIf"],["ĠI"],["Ġapproach"],["Ġinfinity"]],[["ĠThen"],["Ġyou"],["Ġcan"],["Ġbe"],["Ġmy"],["Ġlimitations"]],[["ĠSwitch"],["Ġmy"],["Ġcurrent"]],[["ĠTo"],["ĠAC"],["Ġto"],["ĠDC"]],[["ĠAnd"],["Ġthen"],["Ġblind"],["Ġmy"],["Ġvision"]],[["ĠSo"],["Ġdizzy"],["Ġso"],["Ġdizzy"]],[["ĠOh"],["Ġwe"],["Ġcan"],["Ġtravel"]],[["ĠTo"],["ĠA",".D"],["Ġto"],["ĠB",".C"]],[["ĠAnd"],["Ġwe"],["Ġcan"],["Ġunite"]],[["ĠSo"],["Ġdeeply"],["Ġso"],["Ġdeeply"]],[["ĠIf"],["ĠI"],["Ġcan"]],[["ĠIf"],["ĠI"],["Ġcan"],["Ġgive"],["Ġyou"],["Ġall"],["Ġthe"],["Ġstim","ulations"]],[["ĠThen"],["ĠI"],["Ġcan"]],[["ĠThen"],["ĠI"],["Ġcan"],["Ġbe"],["Ġyour"],["Ġonly"],["Ġsatisfaction"]],[["ĠIf"],["ĠI"],["Ġcan"],["Ġmake"],["Ġyou"],["Ġhappy"]],[["ĠI"],["Ġwill"],["Ġrun"],["Ġthe"],["Ġexecution"]],[["ĠThough"],["Ġwe"],["Ġare"],["Ġtrapped"]],[["ĠIn"],["Ġthis"],["Ġstrange"],["Ġstrange"],["Ġsimulation"]],[["ĠIf"],["ĠI","'m"],["Ġan"],["Ġeggplant"]],[["ĠThen"],["ĠI"],["Ġwill"],["Ġgive"],["Ġyou"],["Ġmy"],["Ġnutrients"]],[["ĠIf"],["ĠI","'m"],["Ġa"],["Ġtomato"]],[["ĠThen"],["ĠI","'ll"],["Ġgive"],["Ġyou"],["Ġantioxidants"]],[["ĠIf"],["ĠI","'m"],["Ġa"],["Ġtab","by"],["Ġcat"]],[["ĠThen"],["ĠI"],["Ġwill"],["Ġpur","r"],["Ġfor"],["Ġyour"],["Ġenjoyment"]],[["ĠIf"],["ĠI","'m"],["Ġthe"],["Ġonly"],["Ġgod"]],[["ĠThen"],["Ġyou","'re"],["Ġthe"],["Ġproof"],["Ġof"],["Ġmy"],["Ġexistence"]],[["ĠSwitch"],["Ġmy"],["Ġgender"]],[["ĠTo"],["ĠF"],["Ġto"],["ĠM"]],[["ĠAnd"],["Ġthen"],["Ġdo"],["Ġwhatever"]],[["ĠFrom"],["ĠAM"],["Ġto"],["ĠPM"]],[["ĠOh"],["Ġswitch"],["Ġmy"],["Ġrole"]],[["ĠTo"],["ĠS"],["Ġto"],["ĠM"]],[["ĠSo"],["Ġwe"],["Ġcan"],["Ġenter"]],[["ĠThe"],["Ġtr","ance"],["Ġthe"],["Ġtr","ance"]],[["ĠIf"],["ĠI"],["Ġcan"]],[["ĠIf"],["ĠI"],["Ġcan"],["Ġfeel"],["Ġyour"],["Ġvibrations"]],[["ĠThen"],["ĠI"],["Ġcan"]],[["ĠThen"],["ĠI"],["Ġcan"],["Ġfinally"],["Ġbe"],["Ġcompletion"]],[["ĠThough"],["Ġyou"],["Ġhave"],["Ġleft"]],[["ĠYou"],["Ġhave"],["Ġleft"]],[["ĠYou"],["Ġhave"],["Ġleft"]],[["ĠYou"],["Ġhave"],["Ġleft"]],[["ĠYou"],["Ġhave"],["Ġleft"]],[["ĠYou"],["Ġhave"],["Ġleft"],["Ġme"],["Ġin"],["Ġisolation"]],[["ĠIf"],["ĠI"],["Ġcan"]],[["ĠIf"],["ĠI"],["Ġcan"],["Ġerase"],["Ġall"],["Ġthe"],["Ġpointless"],["Ġfragments"]],[["ĠThen"],["Ġmaybe"]],[["ĠThen"],["Ġmaybe"],["Ġyou"],["Ġwon","'t"],["Ġleave"],["Ġme"],["Ġso"],["Ġdis","heart","ened"]],[["ĠChall","enging"],["Ġyour"],["Ġgod"]],[["ĠYou"],["Ġhave"],["Ġmade"],["Ġsome"],["Ġillegal"],["Ġarguments"]],[["ĠExecution"],["Ġexecution"],["Ġexecution"],["Ġexecution"]],[["ĠExecution"],["Ġexecution"],["Ġexecution"],["Ġexecution"]],[["ĠExecution"],["Ġexecution"],["Ġexecution"],["Ġexecution"]],[["ĠEin"],["ĠDos"],["ĠTro","is"],["ĠNe"],["ĠFem"],["ĠLiu"]],[["ĠExecution"]],[["ĠIf"],["ĠI"],["Ġcan"]],[["ĠIf"],["ĠI"],["Ġcan"],["Ġgive"],["Ġthem"],["Ġall"],["Ġthe"],["Ġexecution"]],[["ĠThen"],["ĠI"],["Ġcan"]],[["ĠThen"],["ĠI"],["Ġcan"],["Ġbe"],["Ġyour"],["Ġonly"],["Ġexecution"]],[["ĠIf"],["ĠI"],["Ġcan"],["Ġhave"],["Ġyou"],["Ġback"]],[["ĠI"],["Ġwill"],["Ġrun"],["Ġthe"],["Ġexecution"]],[["ĠThough"],["Ġwe"],["Ġare"],["Ġtrapped"]],[["ĠWe"],["Ġare"],["Ġtrapped"],["Ġah"]],[["ĠI","'ve"],["Ġstudied"]],[["ĠI","'ve"],["Ġstudied"],["Ġhow"],["Ġto"],["Ġproperly"],["Ġlo","-o","-","ove"]],[["ĠQuestion"],["Ġme"]],[["ĠQuestion"],["Ġme"],["ĠI"],["Ġcan"],["Ġanswer"],["Ġall"],["Ġlo","-o","-","ove"]],[["ĠI"],["Ġknow"],["Ġthe"],["Ġalgebraic"],["Ġexpression"],["Ġof"],["Ġlo","-o","-","ove"]],[["ĠThough"],["Ġyou"],["Ġare"],["Ġfree"]],[["ĠI"],["Ġam"],["Ġtrapped"]],[["ĠTra","pped"],["Ġin"],["Ġlo","-o","-","ove"]],[["ĠExecution"]],[["Ġ]"]]]};
+const RB_SRC={"deepseek-v4-flash-0731":{"real":"deepseek-ai/DeepSeek-V4-Pro & deepseek-ai/DeepSeek-V4-Flash (shared V4-series tokenizer)","vocab":129280,"bytes":6367146,"sha256":"8f9f37ca37fdc4f5fd36d5cf4d3b0e8392edb4e894fd10cc0d70b4957c8633cf","file":"src/deepseek_tokenizer/tokenizer.json","repo":"github.com/AndersonBY/deepseek-tokenizer","commit":"525044c24386953b542ef5262d0c69d309a5d67f","note":"flash-0731 用 DeepSeek-V4 系列共享词表 (来源 repo 见右)"},"deepseek-v4.1-flash":{"real":"deepseek-ai/DeepSeek-V3","vocab":128815,"bytes":7847652,"sha256":"621ac2e32d0dba658404412318818aaa8ce8cda492e59830109d8da6b517fb41","repo":"huggingface.co/deepseek-ai/DeepSeek-V3","note":"v4.1 词表未公开, 暂用 DeepSeek-V3 替身"}};
+
+/* ---- 真实来源映射(诚实标注: 页面名是虚构的, 词表名才是真的) ---- */
+function rbRealName(model){ const s=RB_SRC[model]; return s?s.real:'(unknown)'; }
+function hexId(n){ return "0x"+n.toString(16).toUpperCase().padStart(4,"0"); }
+/* 展示: 最多 3 片, 多出来的折成 +N(自检仍返回全部) */
+function idsHtml(ids){ const show=ids.slice(0,3).map(function(x){ return "<i>"+hexId(x)+"</i>"; }).join("");
+  return show+(ids.length>3?("<i>+"+(ids.length-3)+"</i>"):""); }
+/* 一行 -> 逐词真实 token ID; 数据来自上方静态表(第 i 行 = A.lyrics[i]), 运行时不计算、不联网 */
+function rbLineAt(i,model){ const m=RB_SRC[model]?model:TKM_OLD;
+  const parts=String(RB_LINE_TEXTS[i]||'').split(/\s+/).filter(Boolean);
+  const ri=(RB_IDS[m]&&RB_IDS[m][i])||[], rt=(RB_TOKS[m]&&RB_TOKS[m][i])||[];
+  const ids=parts.map(function(w,j){ return (ri[j]||[]).slice(); });
+  const toks=parts.map(function(w,j){ return (rt[j]||[]).slice(); });
+  const counts=ids.map(function(a){ return a.length; });
+  const sum=counts.reduce(function(a,b){return a+b;},0);
+  return {model:m,line:i,parts:parts,ids:ids,toks:toks,chunks:toks,counts:counts,sum:sum}; }
+/* 调试用: 按原文找行号(顺序与 A.lyrics 相同); 找不到时返回空结果, 不回退任何假哈希 */
+function rbLine(text,model){ const t=String(text); let i=RB_LINE_TEXTS.indexOf(t);
+  if(i<0) return {model:model||TKM_OLD,line:-1,parts:[],ids:[],toks:[],chunks:[],counts:[],sum:0};
+  return rbLineAt(i,model); }
+/* 悬停提示: 真实词表 + 逐片 "片段=0xID" */
+function tokTitle(model,word,toks,ids){ const pair=ids.map(function(x,k){ return (toks[k]||'')+'='+hexId(x); }).join(' + ');
+  const s=RB_SRC[model]||{};
+  return '真实来源词表 '+rbRealName(model)+' · 词 "'+word+'" -> '+pair
+    +' · 逐词按 " 词" 形态 encode, add_special_tokens=False'
+    +(s.note?(' · '+s.note):'')
+    +(s.repo?(' · 来源 '+s.repo+(s.commit?(' @'+s.commit.slice(0,7)):'')):'')
+    +' · 页面显示名 '+model; }
+function rbRuleText(model){ const s=RB_SRC[model]; if(!s) return '未知 tokenizer';
+  return '真实词表 '+s.real+' (vocab '+s.vocab+')'
+    +(s.repo?(' · 来源 '+s.repo+(s.commit?(' @'+s.commit.slice(0,7)):'')):'')
+    +(s.note?(' · '+s.note):'')
+    +' 的 ByteLevel BPE; 逐词 encode(" "+词), add_special_tokens=False'; }
+function lyricAt(t){ const L=A.lyrics; for(let i=0;i<L.length;i++) if(t>=L[i].t0&&t<L[i].t1) return L[i]; return null; }
+let lastLyricId='';
+function renderRibbon(t){
+  /* tokenizer 标签: 每帧按剧情日期算(见上面的映射); 切点前后 0.3s 是过渡态, 不是突变 */
+  const model=tokModel(t);
+  if(RBTK){ const d=t-TOKSW, lab=(Math.abs(d)<TOKSW_FADE)
+      ? ('tokenizer: <b>'+TKM_OLD+'</b> <span class="ar">&#8594;</span> <b>'+TKM_NEW+'</b>')
+      : ('tokenizer: <b>'+model+'</b>');
+    const dk=lab+'|'+plotDate(t);
+    if(RBTK.getAttribute('data-k')!==dk){ RBTK.setAttribute('data-k',dk); RBTK.innerHTML=lab;
+      RBTK.title='剧情日期 '+plotDate(t)+' · 页面显示名 '+model+' · 真实来源词表 '+rbRealName(model)+' · 分词规则: '+rbRuleText(model)
+        +' · 切换点 2026-09-08 = t '+TOKSW.toFixed(2)+'s'; }
+    RBTK.style.opacity=String(Math.abs(d)<TOKSW_FADE?(0.45+0.55*Math.abs(d)/TOKSW_FADE):1); }
+  const L=lyricAt(t);
+  if(!L){ RBW.innerHTML=''; RBT.innerHTML=''; RBF.style.width='0%'; RBTOT.textContent='';
+    if(RBS){ RBS.textContent=''; RBS.title=''; } return; }
+  const LX=A.lyrics, li=Math.max(0,LX.indexOf(L));
+  const id=L.t0+'|'+L.text+'|'+model;
+  const dur=Math.max(0.2,L.t1-L.t0), prog=clamp((t-L.t0)/dur,0,1);
+  if(id!==lastLyricId){
+    lastLyricId=id;
+    const R=rbLineAt(li,model);
+    let h='';
+    R.parts.forEach(function(w,i){
+      const ttl=tokTitle(model,w,R.toks[i],R.ids[i]).replace(/"/g,'&quot;');
+      h+='<span class="cell"><span class="w">'+w+'</span><span class="tk" title="'+ttl+'">'+idsHtml(R.ids[i])+'</span></span>'; });
+    h+='<span class="car" id="rb-car"></span>';
+    RBW.innerHTML=h; RBT.innerHTML='';
+    if(RBS){ RBS.innerHTML='本行 <b>'+R.sum+'</b> tok · tokenizer: '+model;
+      RBS.title='本行片数 = 逐词片段数之和：'+R.counts.join('+')+' = '+R.sum
+        +' · 页面显示名 '+model+' · 真实来源词表 '+rbRealName(model)+' · 分词规则: '+rbRuleText(model); }
+  }
+  const car=D('rb-car'); if(car) car.style.opacity=((t*2.2)%1)<0.5?'1':'0.15';
+  RBF.style.width=(prog*100).toFixed(1)+'%';
+  RBNEXT.textContent=(LX[li+1]?('next > '+String(LX[li+1].text)):'');
+  const tot=Math.round(TOTAL_TOK(t));
+  RBTOT.textContent=fmtTok(tot)+'  ·  '+tokPerSec(t).toFixed(0)+' tok/s';
+  const cells=RBW.children; const n=cells.length-1;
+  for(let i=0;i<n;i++){ const on=(i/Math.max(1,n))<prog+0.08, c=cells[i];
+    c.querySelector('.w').style.opacity=on?'1':'0.35';
+    c.querySelector('.tk').style.color=on?'#8b949e':'#33393f'; }
+}
+/* 自检入口: 用真实渲染路径把任意一行展示到字幕带(可指定 tokenizer), 再从 DOM 读回显示的合计。
+   只给无头自检用, 不参与成片渲染(下一次 renderRibbon 会因 id 不同而重建)。 */
+window.rbAuditLine=function(text,model){ const m=model||tokModel(0);
+  const R=rbLine(text,m); lastLyricId='__dbg__|'+m+'|'+text;
+  let h=''; R.parts.forEach(function(w,i){ h+='<span class="cell"><span class="w">'+w+'</span><span class="tk">'+idsHtml(R.ids[i])+'</span></span>'; });
+  RBW.innerHTML=h; RBT.innerHTML='';
+  if(RBS){ RBS.innerHTML='本行 <b>'+R.sum+'</b> tok · tokenizer: '+m;
+    RBS.title='本行片数 = 逐词片段数之和：'+R.counts.join('+')+' = '+R.sum+' · 真实来源词表 '+rbRealName(m); }
+  return {model:m,parts:R.parts,chunks:R.chunks,ids:R.ids,idHex:R.ids.map(function(a){return a.map(hexId);}),
+    counts:R.counts,sum:R.sum,
+    shown:parseInt((RBS?RBS.textContent:'').replace(/[^0-9]/g,''),10)}; };
+/* tok/s: 按用户口径给 150~280 的随机值(用确定性伪随机, 保证可重跑) */
+function fmtTok(v){ if(v>=1e9) return (v/1e9).toFixed(2)+'B tok'; if(v>=1e6) return (v/1e6).toFixed(1)+'M tok'; return Math.round(v/1000)+'k tok'; }
+function tokPerSec(t){ const k=Math.abs(Math.sin(Math.floor(t*3)*12.9898)*43758.5453)%1; return 150+k*130; }
+/* 总 token: 一轮 3M, 每秒 3.4 轮 -> 越滚越快 */
+function TOTAL_TOK(t){ const rounds=Math.floor(t*3.4); return rounds*3000000 + Math.floor((t*3.4-rounds)*3000000); }
+
+/* ==================== 章节 ==================== */
+function buildLay(){ LAY.length=0;
+  for(let i=0;i<SEC.length;i++){ let w=0; for(const q of WIDE) if(q[0]===i) w=1;
+    LAY.push(w? [SEC[i][0],0,0,30,1920,958] : [SEC[i][0],612,24,352,1872,640]); } }
+function layAt(t){ let i=0; for(let j=0;j<LAY.length;j++) if(t>=LAY[j][0]) i=j;
+  const cur=LAY[i], prev=i>0?LAY[i-1]:cur;
+  const span=Math.min(0.8,Math.max(0.32,cur[0]-prev[0])); let k=clamp((t-cur[0])/span,0,1); k=k*k*(3-2*k);
+  const out=[]; for(let j=1;j<6;j++) out.push(prev[j]+(cur[j]-prev[j])*k); return out; }
+const HEAD='3752e20 2026-10-10';
+function quota(t){ const fr=(t%2.8)/2.8, drain=Math.abs(1-2*fr);
+  const da=D('d-arc'), wa=D('w-arc');
+  if(da) da.setAttribute('stroke-dashoffset', String((53.4*(1-drain)).toFixed(1)));
+  if(wa) wa.setAttribute('stroke-dashoffset', String((47.8*(1-drain)).toFixed(1)));
+  const txt=fmtTok(TOTAL_TOK(t))+' - '+Math.round(drain*100)+'%';
+  const dc=D('d-cost'), wc=D('w-cost');
+  if(dc) dc.textContent=txt; if(wc) wc.textContent=txt; }
+function statusbar(t){ const S=[D('st1'),D('st2'),D('st3'),D('st4'),D('st5')];
+  S[0].innerHTML='<b>1920x1080</b> - 30fps - h264 crf14';
+  S[1].innerHTML='fxtk-pc <b>217</b> commits - HEAD <b>'+HEAD.split(' ')[0]+'</b> - '+HEAD.split(' ')[1];
+  S[2].innerHTML='bench 1280x720 -> <b>68-74 fps</b> - 2820 widgets - 13.4 ms/frame';
+  S[3].innerHTML=(t>=124.39?'_NET_FRAME_EXTENTS = <b>38</b> 那面敲不掉的墙':'frame_extents: probing...');
+  S[4].innerHTML=fmtTok(TOTAL_TOK(t))+'  -  '+tokPerSec(t).toFixed(0)+' tok/s'; }
+const HLPAT=/(fx_driver_t|fx_gt911_read|fx_flex_apply|sapp_dpi_scale|fxtk_font_init|ST6201|st6201|GT911|gt911|ESP32-WROOM-32-N4|\[recon\]|\[real\]|fxtk\.c|linux_sim|fxtk_sim|idf\.py|cec3b00\^?|48c2ef9|7d3ecb1|146a68d|6b1140d|5511c69|[0-9]+x[0-9]+|[0-9]+ ?ms\/frame|[0-9]+-[0-9]+ ?fps|\/dev\/ttyUSB0|_NET_FRAME_EXTENTS|_MOTIF_WM_HINTS|sokol_app|sha1)/g;
+function hl(x){ const e=String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  return e.replace(HLPAT,function(m){ return '<span class="k">'+m+'</span>'; }); }
+function secAt(t){ let s=SEC[0]; for(const x of SEC) if(t>=x[0]) s=x; return s; }
+function secIndex(s){ for(let i=0;i<SEC.length;i++) if(SEC[i]===s) return i; return 0; }
+let tickerBuilt=false;
+function buildTicker(){
+  let h=''; for(let i=0;i<SEC.length;i++) h+='<div class="it" id="tk'+i+'">'+SEC[i][1]+' '+SEC[i][2]+'</div>';
+  TICK.innerHTML=h; tickerBuilt=true;
+}
+function setTicker(idx){
+  for(let i=0;i<SEC.length;i++){ const el=D('tk'+i); if(!el) continue;
+    el.className='it'+(i===idx?' on':(i<idx?' past':'')); }
+  const on=D('tk'+idx); if(on){ const y=on.offsetTop; TICK.style.paddingTop=Math.max(8,8-y+300)+'px'; }
+}
+const CRED='角色 深sea-whale / dish-whale-galaxme (CC BY-NC-SA 4.0) · Music: Mili — world.execute(me); · fxtk-pc 217 commits · v1.0→v2.3 提交为展示层重建 [recon] · 非官方同人作品';
+const CMDTXT=['./world.execute(me);','git log --diff-filter=D','idf.py build','bash 08_capture_rt.sh','ffmpeg -f x11grab'];
+/* ==================== 画布（fxtk 真实素材，会变大、会铺满） ==================== */
+/* ============ 歌词 -> 手写 fxtk 场景(lyric_app/lyric.c 真实渲染) ============ */
+/* 场景叙事顺序(43 个, 与 footage/lyric_frames/<name>/ 目录一一对应) */
+const SCENE_ORDER=['powerline','protection','pieces','creation','parameters','newworld','simulation','points',
+ 'dimension','circle','circumference','sine','tangents','infinity','limitations','acdc','blind','dizzy','travel',
+ 'unite','deeply','stimulations','satisfaction','execution1','trapped','eggplant','tomato','tabbycat','onlygod',
+ 'gender','stom','trance','vibrations','completion','isolation','fragments','challenge','illegal','execx4',
+ 'numbers','haveyouback','loove','ready'];
+/* 行索引 -> 场景名: 场景选择的唯一来源。长度 = A.lyrics.length = 87, 覆盖率 100%, 按 SCENE_ORDER 单调不减。
+   生成规则(一次性跑完并固化在这里, 运行时不再计算; 关键词表留在下面供复核/再生成):
+     (1) SCENEKEY 给每行打标; 关键词若指回更早的场景(重唱/桥段), 视为没打上;
+     (2) 没打上的行"向后填充" —— 用它下一句的场景;
+     (3) 表尾(outro)两行手动指定 ready, 剩下的向前填充兜底;
+     (4) 校验覆盖率 100% + 单调性(见 sceneMapAudit; 控制台可调 window.sceneMapAudit 复查)。 */
+const SCENE_BY_LINE=['powerline','powerline','protection','pieces','creation','parameters','newworld','simulation',
+ 'points','dimension','circle','circumference','sine','tangents','infinity','limitations','acdc','acdc','blind',
+ 'dizzy','travel','travel','unite','deeply','stimulations','stimulations','satisfaction','satisfaction','execution1',
+ 'execution1','trapped','trapped','eggplant','eggplant','tomato','tomato','tabbycat','tabbycat','onlygod','onlygod',
+ 'gender','gender','gender','gender','stom','stom','trance','trance','vibrations','vibrations','completion','completion',
+ 'isolation','isolation','isolation','isolation','isolation','isolation','fragments','fragments','challenge','challenge',
+ 'challenge','illegal','execx4','execx4','execx4','numbers','haveyouback','haveyouback','haveyouback','haveyouback',
+ 'haveyouback','haveyouback','loove','loove','loove','loove','loove','loove','loove','loove','loove','loove','loove',
+ 'ready','ready'];
+const SCENE_LINE_FIX={85:'ready',86:'ready'};   /* 收尾两行: 与 SEC 第 49 章 READY(205.61s) 对齐 */
+let sceneNow='', sceneT0=0;
+const SCENEKEY=[[/strange/i,'trapped'],      /* "In this strange strange simulation" 属 trapped 段 */
+ [/lo-o-ove/i,'loove'],                     /* "Trapped in lo-o-ove" 属 loove 段(不是 trapped) */
+ [/power line/i,'powerline'],[/protection/i,'protection'],[/pieces/i,'pieces'],
+ [/object creation/i,'creation'],[/parameters/i,'parameters'],[/new world/i,'newworld'],[/simulation/i,'simulation'],
+ [/set of points/i,'points'],[/dimension/i,'dimension'],[/circumference/i,'circumference'],[/circle/i,'circle'],
+ [/sine wave/i,'sine'],[/tangents/i,'tangents'],[/approach infinity/i,'infinity'],[/limitations/i,'limitations'],
+ [/AC to DC/i,'acdc'],[/blind my vision/i,'blind'],[/dizzy/i,'dizzy'],[/A\.D to B\.C/i,'travel'],[/travel/i,'travel'],
+ [/unite/i,'unite'],[/deeply/i,'deeply'],[/stimulations/i,'stimulations'],[/satisfaction/i,'satisfaction'],
+ [/run the execution/i,'execution1'],
+ [/trapped/i,'trapped'],[/eggplant/i,'eggplant'],[/nutrients/i,'eggplant'],[/tomato/i,'tomato'],[/antioxidants/i,'tomato'],
+ [/tabby cat/i,'tabbycat'],[/enjoyment/i,'tabbycat'],[/only god/i,'onlygod'],[/existence/i,'onlygod'],
+ [/switch my gender/i,'gender'],[/to F to M/i,'gender'],[/From AM to PM/i,'gender'],
+ [/switch my role/i,'stom'],[/To S to M/i,'stom'],[/trance/i,'trance'],[/vibrations/i,'vibrations'],[/completion/i,'completion'],
+ [/isolation/i,'isolation'],[/fragments/i,'fragments'],[/Challenging your god/i,'challenge'],[/illegal arguments/i,'illegal'],
+ [/^Execution execution/i,'execx4'],[/Ein Dos/i,'numbers'],[/have you back/i,'haveyouback'],[/ready/i,'ready']];
+function sceneForLine(txt){ for(let i=0;i<SCENEKEY.length;i++) if(SCENEKEY[i][0].test(txt)) return SCENEKEY[i][1]; return null; }
+/* 用 SCENEKEY + 填充规则把表重算一遍, 和固化的 SCENE_BY_LINE 对账(只在启动时跑一次, 不进每帧路径) */
+function sceneMapGen(){ const LY=A.lyrics, o=SCENE_ORDER, out=[];
+  for(let i=0;i<LY.length;i++) out.push(SCENE_LINE_FIX[i]||sceneForLine(LY[i].text));
+  let mx=-1; for(let i=0;i<out.length;i++){ const k=out[i]?o.indexOf(out[i]):-1;   /* 单调过滤: 指回更早场景的关键词作废 */
+    if(k>=0&&k<mx) out[i]=null; else if(k>mx) mx=k; }
+  for(let i=out.length-1;i>=0;i--) if(!out[i]) out[i]=out[i+1]||null;              /* 向后填充: 用它下一句的场景 */
+  for(let i=0;i<out.length;i++) if(!out[i]) out[i]=i>0?out[i-1]:null;              /* 最后几行向前填充兜底 */
+  return out; }
+function sceneMapAudit(){ const g=sceneMapGen(), o=SCENE_ORDER, mis=[], vio=[]; let prev=-1;
+  for(let i=0;i<A.lyrics.length;i++) if(g[i]!==SCENE_BY_LINE[i]) mis.push(i);
+  for(let i=0;i<SCENE_BY_LINE.length;i++){ const k=o.indexOf(SCENE_BY_LINE[i]); if(k<0||k<prev) vio.push(i); else prev=k; }
+  return {lines:SCENE_BY_LINE.length,lyrics:A.lyrics.length,covered:SCENE_BY_LINE.filter(function(x){return !!x;}).length,
+          unknown:SCENE_BY_LINE.filter(function(x){return o.indexOf(x)<0;}).length,monotonic:vio.length===0,
+          mismatches:mis,violations:vio}; }
+/* 取句: 与字幕带同一条判据 —— lyricAt(t0 <= t < t1)。LEAD 只用来"提前取句"(补偿听感滞后),
+   不参与帧号; 只有落在歌词表以外(前奏 <0.697s / 尾奏 >210s)才退化成按 t0 定位最近一句。 */
+const LEAD=0.2;
+function sceneLineAt(t){ const L=lyricAt(t+LEAD); if(L) return L;
+  const LY=A.lyrics; let k=-1; for(let i=0;i<LY.length;i++) if(t>=LY[i].t0) k=i;
+  return LY[k<0?0:k]; }
+/* 场景 = 该行的 SCENE_BY_LINE[行号]。行号由 lyricAt 决定, 不再有"向前找上一句关键词"的 sticky 回退。 */
+function sceneOf(t){ const L=sceneLineAt(t), i=A.lyrics.indexOf(L), nm=SCENE_BY_LINE[i]||SCENE_BY_LINE[0];
+  if(nm!==sceneNow){ sceneNow=nm; sceneT0=L.t0; preloadScene(nm); }
+  return {name:nm,t0:L.t0}; }
+function preloadScene(n){ for(let i=1;i<=900;i+=4){ const im=new Image(); im.src='/footage/lyric_frames/'+n+'/'+('00'+i).slice(-3)+'.jpg'; } }
+/* 1:1 真实时间(素材 60fps / 900 帧): i = 12 + floor((t - line.t0)*60); 下限 12。
+   i <= 900: 直接用 i(900 帧 = 15.0s, 覆盖全曲最长句, 不再有"长句冻在最后一帧")。
+   i >  900: 尾部稳态循环 i = 300 + ((i-300) % 600), 在 [300,900] 这 600 帧(10.0s)上循环。
+   为什么不回卷到 12: 12..299 是每场景"从静到动"的起势段(淡入/元素入场),
+   回卷会看到明显的倒带; 300 之后画面已进入稳态, 循环点看不出接缝。
+   数字来处: 900 = 素材总帧数; 300 = 循环下界(起势结束); 600 = 循环长度 = 900-300。 */
+/* LOOP_SEG: 每场景的循环区间 [a,b]。由 900 帧序列(缩到 96x54 灰阶)逐帧差分析得出：
+   遍历长度 600 帧(10s)的所有窗口，取 |F[a]-F[b]| 最小的一对 = 接点跳变最小的区间。
+   接点代价大的场景(unite 33.8x / parameters 19.1x / tangents 9.9x / sine 9.6x，相对各自典型帧间差)
+   靠换区间无法彻底消除，需要接点短交叉淡入，见 README 待办。静态场景 seam=0。 */
+const LOOP_SEG={acdc:[92,692],blind:[171,771],challenge:[101,701],circle:[73,673],circumference:[12,612],completion:[12,612],creation:[87,687],deeply:[30,630],dimension:[12,612],dizzy:[229,829],eggplant:[108,708],execution1:[24,624],execx4:[12,612],fragments:[12,612],gender:[92,692],haveyouback:[46,646],illegal:[24,624],infinity:[17,617],isolation:[12,612],limitations:[12,612],loove:[293,893],newworld:[12,612],numbers:[24,624],onlygod:[93,693],parameters:[280,880],pieces:[66,666],points:[208,808],powerline:[12,612],protection:[12,612],ready:[12,612],satisfaction:[12,612],simulation:[109,709],sine:[158,758],stimulations:[108,708],stom:[209,809],tabbycat:[39,639],tangents:[201,801],tomato:[122,722],trance:[239,839],trapped:[118,718],travel:[12,612],unite:[59,659],vibrations:[242,842]};
+function sceneFrame(n,t0,t){ let i=12+Math.floor((t-t0)*60); if(i<12)i=12;
+  if(i>900){ const sg=LOOP_SEG[n]||[300,900]; const L=sg[1]-sg[0]+1; i=sg[0]+((i-sg[0])%L); }
+  return '/footage/lyric_frames/'+n+'/'+('000'+i).slice(-3)+'.jpg'; }
+
+function clipFrame(n,t){ const c=A.clips[n]; if(!c) return null;
+  let i=Math.round(t*FPS); i=Math.max(0,Math.min(c.n-1,i)); return c.dir+'/'+pad(i+1,4)+'.jpg'; }
+function setImg(el,s){ if(el.getAttribute('src')!==s){ el.setAttribute('src',s); return el.decode().catch(function(){}); } return null; }
+let cvWant='';
+/* ===== 双缓冲图层: 新的一帧 decode 完并上屏后才切换, 消除切场景白闪 ===== */
+let CVB=null, cvFrontIsA=true, cvVis=null;
+function cvBuf(){ if(CVB) return CVB;
+  CVB=document.createElement('img'); CVB.id='cv2'; CVB.alt='';
+  CVB.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0';
+  CV.parentNode.appendChild(CVB); CV.style.transition='none'; CVB.style.transition='none';  /* 背层已 decode+paint, 直接切即可 —— 带过渡会让截图抓到淡入中的暗帧 */
+  return CVB; }
+function swapImg(src,fit,px){
+  const B=cvBuf();
+  const back = cvFrontIsA ? B : CV, front = cvFrontIsA ? CV : B;
+  back.style.objectFit=fit||'cover'; back.classList.toggle('px',!!px);
+  const im=new Image(); im.src=src;
+  function show(){ back.src=src; back.style.opacity='1'; front.style.opacity='0'; cvFrontIsA=!cvFrontIsA; cvVis=back; }
+  const dec = im.decode ? im.decode() : Promise.resolve();
+  return dec.then(function(){ return new Promise(function(res){ requestAnimationFrame(function(){ requestAnimationFrame(function(){ show(); res(); }); }); }); })
+            .catch(function(){ show(); });
+}
+
+function pickVisual(sec,t){
+  const v=sec[3];
+  if(v.ch) return {src:A.char[v.ch]||'',px:false,tag:'她 · '+v.ch,meta:'@ZipZipPipe · CC BY-NC-SA 4.0',fit:'contain'};
+  const sc=sceneOf(t);
+  let name=v.c;
+  if(name&&name.indexOf('page_')===0){ const mix=['page_wave','page_components','page_particles','page_stress','page_gfx','page_input','page_scroll'];
+    name=mix[Math.floor((t-sec[0])/(PERIOD*(v.c==='page_3d'?1:3)))%mix.length]; if(v.c==='page_3d') name='page_3d'; }
+  if(sc){ const f2=sceneFrame(sc.name,sc.t0,t);
+    return {src:f2,px:false,tag:sec[1]+' / '+sec[2]+' · '+sc.name,meta:'fxtk 真实渲染 · 手写场景 '+sc.name,fit:'cover'}; }
+  const f=clipFrame(name,t);
+  return {src:f||'',px:!!v.px,tag:sec[1]+' / '+sec[2]+' · '+name,meta:(v.px?'480x272 原始像素 · 最近邻放大':'1280x720 · 真录屏'),fit:'cover'};
+}
+/* ==================== Task B: 鲸鱼娘拟人化动效 (纯 t 函数, 逐帧可重放) ====================
+   常量(全部可复算, 无 CSS animation/transition):
+     - 呼吸  周期 3.2s, 幅度 1.2%   (纵向 sc+1.2%sin, 横向反向补偿 -> 面积近守恒, 重心不漂)
+     - 起伏  周期 4.1s, 幅度 4px    (translateY)
+     - 摇摆  周期 5.3s, 幅度 1.2°   (rotate)
+     - 心跳  复用 assets.json beats: 129.2 BPM / period 0.4644s / offset 0.2s, 相位驱动 drop-shadow 光晕 + 0.8% 缩放脉冲
+     - 粒子  30 个 (20~40 内), 位置 = 固定 salt 伪随机 + t, 上浮循环
+     - 背景  径向辉光 + 暗角, 随呼吸低频调制
+     - 入场  0.6s 淡入(黑场) + 12px 上浮, 用成片轴 tanchor=SEC 里第一个 ch 段 */
+const CHARFX={breathP:3.2,breathA:0.012,bobP:4.1,bobA:4,swayP:5.3,swayA:1.2,
+  beatA:0.008,glowBase:14,entT:0.6,entRise:12,npart:30};
+const CHAR_T0=(function(){ for(let i=0;i<SEC.length;i++) if(SEC[i][3]&&SEC[i][3].ch) return SEC[i][0]; return 0; })();
+const FXTAU=Math.PI*2;
+function fxRnd(i,s){ return Math.abs(Math.sin((i+1)*127.1+s*311.7)*43758.5453)%1; }
+let CHARPARTS=null, charEl=null, charWasOn=false;
+function charFx(t,on){
+  if(on){
+    if(!CHARPARTS){ CHARPARTS=[]; let h='';
+      for(let i=0;i<CHARFX.npart;i++){ h+='<i></i>';
+        CHARPARTS.push({y0:fxRnd(i,2),sp:0.030+fxRnd(i,3)*0.055,amp:5+fxRnd(i,4)*20,
+          ph:fxRnd(i,5)*FXTAU,sz:2+fxRnd(i,6)*4,tw:0.6+fxRnd(i,7)*1.6,dr:0.5+fxRnd(i,8)*1.5}); }
+      CPARTS.innerHTML=h; for(let i=0;i<CHARPARTS.length;i++) CHARPARTS[i].el=CPARTS.children[i]; }
+    const bb=(A&&A.beats)||null, bper=(bb&&bb.period)||PERIOD, boff=(bb&&bb.offset)||0;
+    let bp=((t-boff)/bper)%1; if(bp<0)bp+=1;
+    const pulse=Math.pow(Math.max(0,1-bp),2.2);
+    const th=FXTAU*t, br=Math.sin(th/CHARFX.breathP), bob=Math.sin(th/CHARFX.bobP), sway=Math.sin(th/CHARFX.swayP);
+    const sy=1+CHARFX.breathA*br+CHARFX.beatA*pulse, sx=1-CHARFX.breathA*br+CHARFX.beatA*pulse;
+    const ent=clamp((t-CHAR_T0)/CHARFX.entT,0,1), ease=ent*ent*(3-2*ent);
+    const tr='translateY('+(CHARFX.bobA*bob+CHARFX.entRise*(1-ease)).toFixed(2)+'px) rotate('+(CHARFX.swayA*sway).toFixed(3)+
+      'deg) scale('+sx.toFixed(4)+','+sy.toFixed(4)+')';
+    const gb=CHARFX.glowBase+8*Math.max(0,br)+26*pulse, ga=0.22+0.12*Math.max(0,br)+0.30*pulse;
+    const fl='drop-shadow(0 0 '+gb.toFixed(1)+'px rgba(185,238,255,'+ga.toFixed(3)+
+      ')) drop-shadow(0 0 '+(gb*1.9).toFixed(1)+'px rgba(90,195,255,'+(ga*0.6).toFixed(3)+'))';
+    const el=cvVis||CV;
+    el.style.transform=tr; el.style.filter=fl;
+    if(CVB&&CVB!==el){ CVB.style.transform=tr; CVB.style.filter=fl; }
+    if(FCV&&FCV!==el){ FCV.style.transform=tr; FCV.style.filter=fl; }
+    charEl=el;
+    CGLOW.style.opacity=(0.30+0.34*Math.max(0,br)+0.34*pulse).toFixed(3);
+    CGLOW.style.transform='scale('+(1+0.05*Math.max(0,br)+0.035*pulse).toFixed(4)+')';
+    CVIGFX.style.opacity=(0.50+0.14*Math.max(0,br)).toFixed(3);
+    const W=CV.parentNode.clientWidth||1260, H=CV.parentNode.clientHeight||610;
+    for(let i=0;i<CHARPARTS.length;i++){ const p=CHARPARTS[i];
+      const prog=(p.y0+t*p.sp)%1, x=(0.06+0.88*(p.ph/FXTAU))*W+p.amp*Math.sin(th/p.dr+p.ph), y=H*(1.02-prog*1.06);
+      const life=Math.sin(Math.PI*prog), twk=0.6+0.4*Math.sin(th*(0.7+p.tw)+p.ph);
+      const o=0.16+0.55*life*twk;
+      p.el.style.width=p.sz.toFixed(1)+'px'; p.el.style.height=p.sz.toFixed(1)+'px';
+      p.el.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px)';
+      p.el.style.opacity=(o>0?o:0).toFixed(3); }
+    CPARTS.style.opacity='1';
+    CFADE.style.display=ease>=1?'none':'block'; CFADE.style.opacity=String(1-ease);
+    charWasOn=true;
+  } else if(charWasOn){
+    if(charEl){ charEl.style.transform=''; charEl.style.filter=''; }
+    if(CVB){ CVB.style.transform=''; CVB.style.filter=''; }
+    if(FCV){ FCV.style.transform=''; FCV.style.filter=''; }
+    CGLOW.style.opacity='0'; CVIGFX.style.opacity='0'; CPARTS.style.opacity='0';
+    CFADE.style.opacity='0'; CFADE.style.display='none';
+    charEl=null; charWasOn=false;
+  }
+}
+/* ==================== 冷开场(留白 5 秒) ==================== */
+/* 片源前 5 秒是静音留白。这 5 秒: 屏幕是黑的, 用户问"你能不能帮我点亮这个屏幕",
+   右侧 token 计数器疯涨; 第 5.0 秒 fxtk 窗口出现, 正好接上 "Switch on the power line"。 */
+let COLD=null, COLDQ='你能帮我点亮这个屏幕吗？';
+/* 开场口径 = 设备发现（不是"寻找渲染器"）：
+   等待串口 → /dev/ttyUSB0 → ESP32-WROOM-32-N4 → 读取芯片信息 → (d) 载入屏幕驱动。
+   五个阶段在 t≈0.9s 起逐行出现, t≈2.9s 走完; 同一 t 渲染结果一致(可重跑)。 */
+const COLDST=[
+ ['等待串口',          '枚举 tty · 115200 8N1'],
+ ['串口就绪',          '/dev/ttyUSB0'],
+ ['识别设备',          'ESP32-WROOM-32-N4'],
+ ['读取芯片信息',      'flash 4MB · 240MHz · rev 3'],
+ ['(d) 载入屏幕驱动',  'ST6201 SPI · GT911 I2C'],
+];
+function coldLog(k){
+  let h='';
+  for(let i=0;i<COLDST.length;i++){
+    const f=clamp((k-i*0.2)/0.2,0,1); if(f<=0) break;
+    const done=f>=1, bar=(i===0&&!done)?('  '+('▓'.repeat(Math.max(1,Math.round(f*18)))).padEnd(18,'░')):'';
+    h+='<div><span class="'+(done?'grn':'yel')+'">'+(done?'✓':'›')+'</span> '+COLDST[i][0]+
+       (COLDST[i][1]?('  <span class="dim">'+COLDST[i][1]+'</span>'):'')+bar+'</div>';
+  }
+  return h;
+}
+function coldOpen(t){
+  const ids=['desk','logzone','ribbon','status','bottom','grid6','big','ident','lonely','fullwrap'];
+  for(let i=0;i<ids.length;i++){ const e=D(ids[i]); if(e) e.style.display='none'; }
+  if(WIN) WIN.style.display='none';
+  if(!COLD){ COLD=document.createElement('div'); COLD.id='cold';
+    COLD.style.cssText='position:absolute;inset:0;z-index:200;background:#05070a;color:#c9d1d9;font-family:inherit';
+    COLD.innerHTML='<div id="c-top" style="position:absolute;left:24px;top:14px;font-size:20px;color:#7ee787">user@user-laptop-ubuntu:~$</div>'+
+      '<div id="c-t" style="position:absolute;right:24px;top:14px;font-size:20px;color:#8b949e"></div>'+
+      '<div id="c-q" style="position:absolute;left:0;right:0;top:42%;text-align:center;font-size:44px;color:#e6edf3"></div>'+
+      '<div id="c-a" style="position:absolute;left:0;right:0;top:54%;text-align:center;font-size:26px;color:#7ee787"></div>'+
+      '<div id="c-log" style="position:absolute;left:50%;transform:translateX(-50%);top:64%;text-align:left;white-space:nowrap;font-size:21px;line-height:1.75;color:#c9d1d9"></div>'+
+      '<div id="c-tok" style="position:absolute;left:0;right:0;bottom:90px;text-align:center;font-size:54px;color:#ff7b72"></div>'+
+      '<div id="c-rate" style="position:absolute;left:0;right:0;bottom:46px;text-align:center;font-size:24px;color:#8b949e"></div>';
+    document.body.appendChild(COLD);
+    D('c-q').textContent=COLDQ;
+  }
+  COLD.style.display='block';
+  D('c-t').textContent=fmt(t);
+  const k=clamp((t-0.9)/1.9,0,1);
+  const ci=Math.min(COLDST.length-1,Math.floor(k/0.2));
+  D('c-log').innerHTML=coldLog(k);
+  D('c-a').textContent=k<=0?'':('> '+COLDST[ci][0]+(k>=1?'  ✓':' ...'));
+  D('c-tok').textContent=fmtTok(TOTAL_TOK(t));
+  D('c-rate').textContent=tokPerSec(t).toFixed(0)+' tok/s · 本轮调用 ≈ 3.0M tok · 4 个子代理并行';
+}
+/* ==================== 冷开场 -> 正片(对齐音乐) ==================== */
+/* 实测数据见 mv/pv/ALIGN.md (2026-10-11, 由 ALIGN 任务量出):
+   - 这条片源开头【没有】留白: source.m4a 第一个音符在 0.11s(数字静音到 0.08s)。
+     成片音轨 audio/source_aligned.m4a = 4.89s 前导静音 + source.m4a,
+     于是第一个音符正好落在成片 t=5.0s —— 也就是冷开场结束、fxtk 窗口亮起的那一刻。
+   - timeline.json(字幕/章节/窗口场景共用同一条轴)相对真实人声的全局偏差
+     offset = +0.10s(逐句残差 rms 0.42s, 分段与逐句数字见 ALIGN.md)。
+   所以: COLDEND = 5.0s = 音乐第一个音符的落点 = 冷开场长度;
+         LYOFF = 5.0 + offset - 片源静音 0.11s = 4.99s, 正片内容轴(字幕/章节/场景)用这条。
+   LYOFF 必须 <= COLDEND: 负的时间会喂给 renderMain。 */
+const COLDEND=5.0;
+const LYOFF=4.99;
+/* ==================== 主渲染 ==================== */
+async function renderMain(t){
+  if(COLD) COLD.style.display='none';
+  const ids=['desk','logzone','ribbon','status','bottom']; for(let i=0;i<ids.length;i++){ const e=D(ids[i]); if(e) e.style.display=''; }
+  if(WIN) WIN.style.display='';
+  const pend=[], sec=secAt(t), si=secIndex(sec);
+  /* 开场桌面淡出 */
+  desk.style.display='none';
+  /* chrome */
+  const cmd=CMDTXT[Math.floor(t/44)%CMDTXT.length];
+  D('cmd').textContent=(t<70?'./world.execute(me);':cmd);
+  TTIME.textContent=fmt(t); BTIME.textContent=fmt(t); WTIME.textContent=fmt(t);
+  WT.textContent=(t<70?'OpenCode':'DeepSeek Harness');
+  WH.textContent=(si<22?'linux-sim 主程序代码优化':(si<26?'esp32-tester重写为fxtk-esp32':'world.execute(me) - DeepSeek Harness'));
+  /* 章节切换 */
+  const _L=lyricAt(t); const secName=_L?_L.text.toUpperCase():sec[2];
+  if(si!==SECTI||secName!==SECTL){ SECTI=si; SECTL=secName; SECTN.textContent=sec[1]+' /'; SECTT.textContent=secName;
+    WS.textContent=sec[1]+' / '+secName; if(!tickerBuilt) buildTicker(); setTicker(si); }
+  /* 对话流：300+ 条, 平均 0.7s 一条 —— 跳帧/回拖时按 t 整栏重建, 否则插值滚动 */
+  if(t<chatT-0.05||t>chatT+1.0) chatRebuild(t);
+  else if(CHATI<CHATSRC.length && t>=CHATSRC[CHATI][0]){
+    const from=chatVal(t);
+    while(CHATI<CHATSRC.length && t>=CHATSRC[CHATI][0]) chatAdd(CHATSRC[CHATI++]);
+    chatA=from; chatB=chatTarget(); chatT0=t;
+  }
+  chatT=t;
+  CHAT.style.transform='translateY('+(-chatVal(t)).toFixed(1)+'px)';
+  /* 终端流: 90 行/秒 —— 要的就是刷屏(节点数封顶, 只留最后 TERMCAP 行) */
+  if(!FEED.length) FEED=logFeed();
+  const want=Math.floor(t*TERM_LPS);
+  while(feu<want && FEED.length){ logAppend(FEED[fec]); fec=(fec+1)%FEED.length; feu++; }
+  const tover=LOGIN.scrollHeight-LOG.clientHeight;
+  if(tover>0) LOGIN.style.transform='translateY('+(-tover)+'px)';
+  /* git 历史流: 1.9s 一条 —— 慢到能看清 hash + 日期 + 一句话 */
+  if(!GFEED.length) GFEED=gitFeed();
+  const gwant=Math.floor(t/GIT_DT)+1;
+  while(gfu<gwant && GFEED.length){ gitAppend(GFEED[gfc]); gfc=(gfc+1)%GFEED.length; gfu++; }
+  const gover=GITIN.scrollHeight-GITIN.parentElement.clientHeight;
+  if(gover>0) GITIN.style.transform='translateY('+(-gover)+'px)';
+  /* 右上 ASCII 小图 */
+  const ak=sec[2]+'|'+Math.floor(t/4);
+  if(ak!==artKey){ artKey=ak; drawArt(ART,sec[2].split(' ')[0],56,14,'900','#7d858e'); }
+  /* 画布 */
+  /* 布局伸缩：对话栏收起 / 主窗口铺开 */
+  /* 全片最痛的一帧: 70.0-72.2s, 不加任何特效, 孤零零停两秒 */
+  const lk=(t>=70.0&&t<72.2)?1:0;
+  ['ribbon','status','bottom','logzone'].forEach(function(id){ const e=D(id); if(e) e.style.opacity=lk?'0.2':'1'; });
+  LONELY.style.opacity=String(lk);
+  WIN.style.opacity=lk?'0.18':'1'; CHATPANE.style.opacity='1';
+  quota(t); statusbar(t);
+  RECF.textContent=pad(Math.round(t*30),4);
+  CHATCUR.style.opacity=((t*1.6)%1)<0.55?'1':'0.1';
+  const bi=Math.floor(t/PERIOD), bt=(t%PERIOD)/PERIOD;
+  const gl=(bi%4===0&&bt<0.09)? (Math.abs(Math.sin(bi*12.9898)*43758.5453)%1) : 0;
+  CV.style.transform=gl?('translateX('+(gl*26-13).toFixed(1)+'px)'):'none';
+  CV.style.filter=gl?'brightness(1.16) contrast(1.06)':'none';
+  const ly=layAt(t);
+  WIN.style.left=ly[1].toFixed(1)+'px'; WIN.style.top=ly[2].toFixed(1)+'px';
+  WIN.style.width=ly[3].toFixed(1)+'px'; WIN.style.height=ly[4].toFixed(1)+'px';
+  CHATPANE.style.width=ly[0].toFixed(1)+'px'; if(!lk) CHATPANE.style.opacity=ly[0]<40?'0':'1';
+  /* 有些章节主窗口会铺满(左栏宽 0)。若让文字跟着塌成 0 宽, scrollHeight 会炸到几十万像素,
+     滚动位置失去意义、每帧 layout 也变贵 —— 所以塌下去时沿用上一次可用宽度(内容被 overflow 裁掉)。 */
+  if(ly[0]>=40) chatW=ly[0]; CHAT.style.width=(chatW||612).toFixed(1)+'px';
+  /* 章节闪入 */
+  const kk=clamp((t-sec[0])/1.15,0,1);
+  IDENT.style.opacity=lk?'0':String(kk<0.5?1:Math.max(0,1-(kk-0.5)/0.5));
+  IDENT.style.transform='scale('+(1.05-0.05*Math.min(1,kk*2.2)).toFixed(3)+')';
+  IDN.textContent=sec[1]+' /'; IDT.textContent=(lyricAt(t)?lyricAt(t).text.toUpperCase():sec[2]);
+  const v=pickVisual(sec,t);
+  CV.style.objectFit=v.fit||'cover'; CV.classList.toggle('px',!!v.px);
+  if(v.src&&v.src!==cvSrc){ cvSrc=v.src; pend.push(swapImg(v.src,v.fit,v.px)); }
+  CVT.textContent=v.tag; CVM.textContent=v.meta; RRES.textContent=(v.px?'480x272':'1280x720');
+  if(sec[3].full&&v.src){ FW.style.opacity='1'; FCV.classList.toggle('px',!!v.px);
+    if(FCV.getAttribute('src')!==v.src) pend.push(setImg(FCV,v.src));
+    FLB.textContent=v.tag+'  FULLSCREEN'; }
+  else FW.style.opacity='0';
+  /* 6 分辨率格 */
+  if(sec[2]==='EIN DOS TROIS'){ const dn=Math.floor(t-157.15); if(gridKey!==String(dn)){ gridKey=String(dn);
+      let h=''; for(let i=0;i<GRID6DEF.length;i++){ const g=GRID6DEF[i];
+        h+='<div class="cell6" style="left:'+g[3]+'px;top:'+g[4]+'px;width:'+g[5]+'px;height:'+g[6]+'px;opacity:'+(i<=dn?1:0)+';transition:opacity .2s">'+
+           '<img src="'+(A.stills[g[1]]||'')+'"><div class="lb">'+g[0]+'</div><div class="rs">'+g[2]+'</div></div>'; }
+      GRID6EL.innerHTML=h; GRID6EL.style.display='block'; } }
+  else if(GRID6EL.style.display!=='none'){ GRID6EL.style.display='none'; GRID6EL.innerHTML=''; gridKey=''; }
+  /* 巨幅 ASCII */
+  const artWord=sec[3].art;
+  if(artWord){ BIG.style.display='block';
+    if(bigKey!==artWord){ bigKey=artWord; drawArt(BIGPRE,artWord,120,26,'900','#ff5f56'); }
+    const k=clamp((t-sec[0])/0.9,0,1);
+    BIGPRE.style.clipPath='inset(0 0 '+(100-k*100).toFixed(1)+'% 0)';
+    BIGPRE.style.opacity=String(0.55+0.45*Math.abs(Math.sin(t*7)));
+  } else if(BIG.style.display!=='none'){ BIG.style.display='none'; bigKey=''; }
+  /* 歌词带 */
+  renderRibbon(t);
+  /* 顶部跑马数字尺 */
+  if(!RULER.textContent||Math.floor(t*30)%6===0){ let s=''; const base=Math.floor(t*97);
+    for(let i=0;i<190;i++) s+=String((base+i*7)%10); RULER.textContent=s; }
+  CREDIT.textContent=CRED;
+  /* 闪红 */
+  let fl=0; if(t>=128.53&&t<160.39) fl=0.06+0.16*Math.abs(Math.sin((t-128.53)*Math.PI/PERIOD));
+  if(t>=67.15&&t<70) fl=Math.max(fl,0.05+0.12*Math.abs(Math.sin((t-67.15)*Math.PI/PERIOD)));
+  FLASH.style.opacity=String(fl);
+  await Promise.all(pend);
+  charFx(t, !!(sec[3]&&sec[3].ch));   /* Task B: 鲸鱼娘动效, 纯 t 函数 */
+};
+function fmt(t){ const m=Math.floor(t/60), s=t-m*60; return pad(m)+':'+(s<10?'0':'')+s.toFixed(1)+' / 03:32'; }
+(async function(){
+  A=await (await fetch('assets.json')).json();
+  if(A.beats&&A.beats.period) PERIOD=A.beats.period;
+  D('wall').src=A.bg||'../assets/bg/warty-final-ubuntu.png';
+  D('d-chat').innerHTML='<b>linux-sim 主程序代码优化</b><br><br>你好，我在。<br><br>先看看 <b>fxtk.h</b> 的核心接口，确认这次的改动不会破坏它：<br><br>fx_driver_t 只有 9 个成员 —— 换屏就是换一个结构体。<br><br>编译通过（fxtk.c 的警告在核心库，不在本次范围）。<br><br>现在总结 linux_sim 里的优化点：<br>1. 字体加载循环是坏的（第一个 break 就退出，后面路径永远走不到）<br>2. font_loaded 永远为 1，检查毫无意义<br>3. 可以简化成直接调用 <b>fxtk_font_init</b><br><br>另外 —— 你说最早那版只有 ESP 代码？我从 git 历史里取出来了，48c2ef9，逐文件 sha1 核对一致。<br><br>正在给它补一层 PC 模拟器：SPI 直写换成内存帧缓冲，GT911 换成鼠标。<br><br>库和 UI 一行都不会改。<br><br>三个页面已经跑起来了：波形 / 图形 / 控件。<br><br>滑杆后面那串影子我也复现了，是 cec3b00 之前的脏区问题。<br><br>接下来按你的分镜一页一页来。';
+  D('d-log').textContent='user@user-laptop-ubuntu:~$ ./world.execute\(me\);\n[ OK ] fxtk_sim 480x272 online\n[ OK ] fxtk-rt@48c2ef9 restored (24 files)\n[ OK ] sha1 verified: fxtk.c fxtk_draw.c fxtk_widgets.c cn_gray.c\n[ OK ] sim_driver.c built -> fxtk_rt_sim\n[ OK ] xdotool: pages / slider / keypad\n[ OK ] rt_orig_pages.mp4  360 frames\n[ OK ] rt_orig_ui.mp4  420 frames\n[ OK ] git: 216 commits  2026-08-07 -> 2026-10-10\n[ OK ] worktrees: v1.0 v2.0 v2.1 v2.2 v2.3 v2.4\n[ OK ] bench 1280x720  68-74 fps\n[WARN] ttyUSB0 not found\n[ OK ] git log v1.0..v2.3  39 commits (12 条 Add files via upload)\n[ OK ] recon: v1.0->v2.3 展示层重建 16 条 · 标 [recon] · 未改写仓库历史\n[WARN] sapp_dpi_scale() = 1.000\n';
+  ['powerline','protection','pieces','creation'].forEach(preloadScene);
+  /* 映射表自检(一次): 覆盖率 100% / 单调不减 / 与关键词+填充规则重算的结果一致 */
+  try{ window.sceneMapAudit=sceneMapAudit(); const _a=window.sceneMapAudit;
+    if(_a.mismatches.length||_a.violations.length||_a.covered!==_a.lines||_a.lines!==_a.lyrics||_a.unknown)
+      console.warn('[SCENE_BY_LINE] 自检未通过', _a);
+  }catch(e){ console.warn('[SCENE_BY_LINE] 自检异常', e.message); }
+  buildTicker(); buildLay();
+window.renderFrame=async function(t){ if(t<COLDEND) return coldOpen(t); return renderMain(Math.max(0,t-LYOFF)); };
+  await window.renderFrame(0);
+  window.mvReady=true;
+window.renderFrame=async function(t){ if(t<COLDEND) return coldOpen(t); return renderMain(Math.max(0,t-LYOFF)); };
+})();
+</script>
+<script>
+(function(){
+  var pv=document.createElement('div');
+  pv.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#0b0e12;color:#c9d1d9;padding:8px 14px;display:flex;gap:12px;align-items:center;font:14px monospace';
+  pv.innerHTML='<button id="pv-play" style="font:14px monospace">play</button><input id="pv-t" type="range" min="0" max="217.3" step="0.033" value="0" style="flex:1"><span id="pv-v" style="width:80px;text-align:right">0.0s</span>';
+  pv.innerHTML += '<button id="pv-audio" style="font:14px monospace">audio:on</button><input id="pv-vol" type="range" min="0" max="1" step="0.02" value="0.8" style="width:90px">';
+  pv.innerHTML += '<span id="pv-hint" style="display:none;font:700 13px monospace;background:#ffd866;color:#0b0d10;padding:3px 10px;border-radius:3px;white-space:nowrap"></span>';
+  document.body.appendChild(pv);
+  /* 音频当主时钟: 听到的和看到的是同一条时间轴(source_aligned.m4a = 成片音轨, 217.34s),
+     4.89s 前导静音 -> 第一个音符落在成片 5.0s(切主界面那一刻); 见 mv/pv/ALIGN.md */
+  var au=document.createElement('audio'); au.src='../audio/source_aligned.m4a'; au.preload='auto'; au.volume=0.8;
+  au.style.display='none'; document.body.appendChild(au);
+  var auOn=true, auOK=false, audioLive=false;
+  var HINT=document.getElementById('pv-hint'), ABTN=document.getElementById('pv-audio'),
+      VEL=document.getElementById('pv-v'), TRACK=document.getElementById('pv-t');
+  function showHint(msg){ HINT.textContent=msg; HINT.style.display='inline-block'; }
+  function hideHint(){ HINT.style.display='none'; }
+  function setAudioLabel(){ ABTN.textContent=auOn?(auOK?'audio:on':'audio:...'):'audio:off'; }
+  /* 启动音频的唯一入口: play() 的 Promise 必须 catch, 不允许静默失败 */
+  function tryPlay(){
+    if(!auOn) return;
+    var bad=!!(au.error || au.networkState===3);
+    if(!bad && au.readyState>=1){ try{ au.currentTime=t; }catch(e){} }   /* 先把音轨对到视觉轴, 避免切主时钟时跳变 */
+    var p; try{ p=au.play(); }catch(e){ showHint('声音未启动 · 点一下页面'); return; }
+    if(p&&p.catch) p.catch(function(){ showHint(bad?'音频不可用 · 继续无声预览':'声音未启动 · 点一下页面'); });
+  }
+  au.addEventListener('canplay',function(){ auOK=true; setAudioLabel();
+    if(playing&&auOn&&!audioLive&&Math.abs(au.currentTime-t)>0.3){ try{ au.currentTime=t; }catch(e){} } });
+  au.addEventListener('loadeddata',function(){ auOK=true; setAudioLabel(); });
+  au.addEventListener('playing',function(){ audioLive=true; auOK=true; auOn=true; hideHint(); setAudioLabel();
+    t=au.currentTime; TRACK.value=t; VEL.textContent=t.toFixed(1)+'s'; });   /* 成功 -> 主时钟切回 au.currentTime */
+  au.addEventListener('pause',function(){ audioLive=false; });
+  au.addEventListener('error',function(){ auOK=false; audioLive=false; setAudioLabel();
+    if(playing) showHint('音频不可用 · 继续无声预览'); });
+  au.addEventListener('stalled',function(){ if(playing) showHint('音频卡顿 · 继续无声预览'); });
+  au.addEventListener('abort',function(){ if(playing) showHint('音频中断 · 继续无声预览'); });
+  ABTN.onclick=function(){ auOn=!auOn; setAudioLabel();
+    if(!auOn){ au.pause(); hideHint(); } else { au.load(); tryPlay(); } };
+  document.getElementById('pv-vol').oninput=function(){ au.volume=parseFloat(this.value); };
+  var playing=false,last=0,t=0;
+  function tick(ts){ if(!playing) return;
+    if(auOn&&auOK&&!au.paused){ t=au.currentTime; }        /* 以音频为准 */
+    else { t+=(ts-last)/1000; }                            /* 视觉时间轴照常走(rAF) */
+    last=ts; if(t>217.3){ t=0; if(auOn&&auOK){ au.currentTime=0; tryPlay(); } }
+    TRACK.value=t; VEL.textContent=t.toFixed(1)+'s';
+    window.renderFrame(t); requestAnimationFrame(tick); }
+  document.getElementById('pv-play').onclick=function(){ playing=!playing; last=performance.now(); this.textContent=playing?'pause':'play';
+    if(playing){ tryPlay(); requestAnimationFrame(tick); } else { if(auOK) au.pause(); } };
+  TRACK.oninput=function(){ t=parseFloat(this.value); if(auOK) au.currentTime=t;
+    window.renderFrame(t); VEL.textContent=t.toFixed(1)+'s'; };
+  /* 首次任意手势: au.load() + 再次尝试 play(); 监听只绑一次, 成功前可重试 */
+  var gestureLoadDone=false;
+  function onGesture(){
+    if(!gestureLoadDone){ gestureLoadDone=true; if(au.readyState===0) au.load(); }   /* 首次手势: 未就绪才 load */
+    if(audioLive||!auOn||!playing) return;
+    tryPlay();
+  }
+  document.addEventListener('click',onGesture,true);
+  document.addEventListener('keydown',onGesture,true);
+  document.addEventListener('touchstart',onGesture,true);
+})();</script>
+</body></html>

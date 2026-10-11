@@ -1,0 +1,4 @@
+$ grep -n 'fx_flex_apply' components/fxtk/fxtk.h | head -3
+110:#define FX_POS_FLEX  4   /* v2.5: 坐标由 fx_flex_apply 写入, 布局期不重算 */
+444: *     fx_flex_apply_simple(panel, FX_FLEX_ROW, 8, 6,
+453: *     fx_flex_apply(panel, it, 3, FX_FLEX_ROW, 8, 6,

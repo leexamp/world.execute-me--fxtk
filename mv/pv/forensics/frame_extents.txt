@@ -1,0 +1,2 @@
+$ xprop -root _NET_FRAME_EXTENTS 2>/dev/null || echo 'xprop: [N/A] 本会话取不到根窗口属性'
+_NET_FRAME_EXTENTS:  not found.

@@ -1,0 +1,14 @@
+import { chromium } from 'playwright-core';
+import os from 'os';
+const EXE = os.homedir() + '/.cache/ms-playwright/chromium-1148/chrome-linux/chrome';
+const b = await chromium.launch({ executablePath: EXE, args: ['--no-sandbox','--disable-gpu'] });
+const p = await b.newPage({ viewport: { width: 1920, height: 1080 } });
+p.on('pageerror', e => console.log('PAGEERROR:', e.message));
+p.on('console', m => { if (m.type()==='error') console.log('CONSOLE:', m.text()); });
+p.on('response', r => { if (r.status()>=400) console.log('HTTP', r.status(), r.url()); });
+await p.goto('http://127.0.0.1:8901/web/mv.html');
+await p.waitForTimeout(2500);
+console.log('mvReady =', await p.evaluate(() => window.mvReady));
+console.log('A =', await p.evaluate(() => (window.A ? Object.keys(window.A).join(',') : 'null')));
+await p.screenshot({ path: '/tmp/dbg.png' });
+await b.close();

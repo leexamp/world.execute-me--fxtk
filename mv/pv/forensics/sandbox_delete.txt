@@ -1,0 +1,13 @@
+$ git show --stat 7d3ecb1 | head -12
+commit 7d3ecb18251f8a2eca566ec4b660c196e9762dac
+Author: yue-weikai <69029820+jiaowobaba02@users.noreply.github.com>
+Date:   Sun Aug 16 20:21:06 2026 +0800
+
+    Delete linux_sim directory
+
+ linux_sim/app.c                 | 352 ----------------------------------------
+ linux_sim/app_desktop.c         | 254 -----------------------------
+ linux_sim/build.sh              |  43 -----
+ linux_sim/build_ex.sh           |  15 --
+ linux_sim/build_win.sh          |  19 ---
+ linux_sim/build_win_cross.sh    |  43 -----

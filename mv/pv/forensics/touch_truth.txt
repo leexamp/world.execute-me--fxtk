@@ -1,0 +1,4 @@
+$ grep -n 'touch_read' components/fxtk/fxtk.h | head -3
+280:    int  (*touch_read)(int *x, int *y, int *pressed);
+393: * 【用法】驱动已有 touch_read 的话, 在 fx_poll() 之后取空事件队列即可:
+401: * 【⚠️ 只支持单指】当前驱动接口 touch_read(x,y,pressed) 只给一个触点,

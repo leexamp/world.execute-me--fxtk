@@ -1,0 +1,6 @@
+$ grep -n 'mutter\|_MOTIF_WM_HINTS\|38' CHANGELOG.md | grep -i '标题栏\|装饰\|frame' | head -4; echo '--- 现场实测 ---'; xprop -root _NET_FRAME_EXTENTS 2>&1 | head -2
+19:- **实测结论（本机 GNOME Shell/mutter + XWayland 1920×1080，装饰高 38px）**：
+26:  | 去标题栏 | ⚠️ **`_MOTIF_WM_HINTS` 无效**（连 unmap+map 都不行） | 回查 `_NET_FRAME_EXTENTS` |
+28:- **去标题栏那条不是本模块的 bug**：mutter 走客户端装饰，就是不认 motif hints。
+--- 现场实测 ---
+_NET_FRAME_EXTENTS:  not found.

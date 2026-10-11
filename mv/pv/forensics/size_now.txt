@@ -1,0 +1,3 @@
+$ ls -l demo-main/fxtk_sim | awk '{print $5, $9}'; file demo-main/fxtk_sim | cut -c1-120
+385912 demo-main/fxtk_sim
+demo-main/fxtk_sim: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-l

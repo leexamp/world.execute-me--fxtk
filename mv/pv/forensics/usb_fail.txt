@@ -1,0 +1,4 @@
+$ ls -l /dev/ttyUSB0; echo '---'; idf.py flash 2>&1 | head -2
+ls: 无法访问 '/dev/ttyUSB0': 没有那个文件或目录
+---
+mv/pv/scripts/11_forensics2.sh: 行 6: idf.py: 未找到命令

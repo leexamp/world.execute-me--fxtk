@@ -1,0 +1,49 @@
+# measurements.txt — 成片实测原始数据
+# 生成: 2026-10-10  工具: ffmpeg 自相关/blackdetect/signalstats
+
+## 片源
+codec_name=h264
+width=1280
+height=720
+r_frame_rate=30/1
+nb_frames=6369
+codec_name=aac
+r_frame_rate=0/0
+nb_frames=9952
+duration=212.300000
+size=34440343
+bit_rate=1297799
+
+## 节奏
+BPM=129.2 (onset 自相关 r=0.660)  beat=0.464s  bar=1.858s  phase=204ms
+
+## 剪辑点 (scene>0.3) 共 20 个
+7.16667
+12.7
+23.9333
+28.4
+36.2
+42.7
+57.7
+63.4333
+94.4
+101.2
+107.8
+114
+118.033
+138
+147
+166.033
+178
+184.033
+196
+205.633
+
+## 落小节线检查
+落在 115 个小节线上(<40ms)的刀数: 0
+
+## 亮度
+平均 YAVG=74.0   暗帧(<40)=65/212 秒 (31%)   亮帧(>100)=53 秒
+
+## 黑场段 (blackdetect d=0.5 pix_th=0.10)
+4 段, 合计 4.8s, 占 2.3%

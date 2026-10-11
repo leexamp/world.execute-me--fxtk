@@ -1,0 +1,13 @@
+$ git log --oneline main..feat/v2.5 | head -12
+3752e20 docs+test(v2.5): 新功能可视化演示 + 无头证据收集; 记录子控件"逆创建顺序"陷阱
+ff1afac feat(v2.5): SVG 子集 → canvas (解析与绘制分离) + 61 项无头自检
+3a77717 feat(v2.5): 弹性布局 (flex 子集) —— 求解与应用分离, 2640 组随机穷举自检
+a2cdab3 docs(v2.5): 更正帧率瓶颈结论 —— 实测是 CPU 画控件(96%), 不是上传(3.5%)
+426a741 chore: .gitignore 补上 v2.5 三个自检产物 (par_test/uiscale_test/gesture_test)
+f5a89af feat(v2.5): 触摸手势(单指) + 修掉"源清单第3次漏改"(改为自动发现)
+e31fc20 feat(v2.5): 高 DPI —— 开启 high_dpi + 缩放改按逻辑宽算(两者必须配对)
+beda94a feat(v2.5): 并行 for (CPU 多线程) —— 并如实叫 par, 不叫 gpu
+a9095a4 perf(v2.5): stb 图片编解码改为编译期可选 + 删死代码(消除唯一警告)
+9df24a7 docs(v2.5): 记录单窗口行为的实测结论 + 两条使用铁律 + 体积代价 0
+a393f1d feat(v2.5): 单窗口桌面行为 —— 去标题栏/置顶/移动/居中/拖动
+1d73d99 Merge pull request #9 from leexamp/fix/v2.4.5-docs-ghost-api-golden

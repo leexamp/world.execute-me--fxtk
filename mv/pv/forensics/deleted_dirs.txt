@@ -1,0 +1,9 @@
+$ git log --diff-filter=D --name-only --format='%h %ad %s' --date=short -- linux_sim | head -8
+7d3ecb1 2026-08-16 Delete linux_sim directory
+
+linux_sim/app.c
+linux_sim/app_desktop.c
+linux_sim/build.sh
+linux_sim/build_ex.sh
+linux_sim/build_win.sh
+linux_sim/build_win_cross.sh

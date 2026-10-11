@@ -1,0 +1,4 @@
+$ git show 7d3ecb1^:linux_sim/app.c 2>/dev/null | head -3
+#include <stdlib.h>
+#include <stdlib.h>
+/**

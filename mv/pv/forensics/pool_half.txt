@@ -1,0 +1,3 @@
+$ git show -s --format='%h %ad %s' --date=short 4837d08 043175e
+4837d08 2026-09-19 perf+size(v2.4.3): 控件池 PC 16384→8192(.bss 16.6→14.1MB, 压测 2820 控件 8.70ms/114.9fps 不受影响); 确认 sokol 校验层本由 SOKOL_DEBUG 控制且从未开启(故 -DNDEBUG 省 0KB 属必然), 体积路线到此为止
+043175e 2026-09-19 chore(轻量化): 删 2 个未引用的 sokol 头(sokol_fetch/sokol_time); 演示动画改为默认关(用户实测开启后不如以前利落); CFLAGS 加 -DNDEBUG(实测 0KB 变化, sokol 校验层不由它控制)

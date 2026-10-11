@@ -1,0 +1,11 @@
+$ git show --stat 146a68d | head -10
+commit 146a68d8b316109572893ffb3676e50b520af7ce
+Author: jiaowobaba02 <fxtk@local>
+Date:   Sun Sep 6 23:56:14 2026 +0800
+
+    发布产物体积优化: Linux 154->101KB, Windows 801->183KB
+    
+    - 默认构建档: -Os + LTO + -ffunction-sections + gc-sections + 去 unwind/ident
+    - mingw 实录: -fdata-sections 与 LTO 同用使 PE .data 实体化 44.6MB, Windows 侧剔除
+    - 调试回归: make CFLAGS="-O2 -g" LDFLAGS=
+    - 验证: make test PASS / Linux dummy 冒烟 / wine 冒烟均通过

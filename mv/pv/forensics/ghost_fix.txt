@@ -1,0 +1,13 @@
+$ git show cec3b00 --stat | head -8 && echo '---' && git show cec3b00 -s --format='%H%n%ad%n%s' --date=iso | head -3
+commit cec3b00ec43eab68d78390981b70d781767f57e7
+Author: jiaowobaba02 <fxtk@local>
+Date:   Sun Sep 13 00:10:52 2026 +0800
+
+    fix(核心): 立即重绘不擦背景导致拖滑杆留一串滑块残影 —— 用户报的'脏区未清除'根因
+    
+    - redraw_widget_now() 的按钮/滑杆/进度条/复选框分支只设裁剪不擦旧像素
+    - 改为复用地脏区路径 redraw_region(): 先铺窗口背景 + 重画相交控件(容器铺自己的底色)
+---
+cec3b00ec43eab68d78390981b70d781767f57e7
+2026-09-13 00:10:52 +0800
+fix(核心): 立即重绘不擦背景导致拖滑杆留一串滑块残影 —— 用户报的'脏区未清除'根因

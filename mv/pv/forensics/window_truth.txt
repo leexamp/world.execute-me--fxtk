@@ -1,0 +1,7 @@
+$ grep -n '多窗口\|单窗口' components/fxtk/fxtk_desktop.h | head -4; echo '---'; grep -c 'sapp_run' third_party/sokol/sokol_app.h
+21:/* ==================== v2.5: 单窗口桌面行为 ====================
+22: * 【为什么这些能做, 而"多窗口"不能】
+23: *   sokol_app 是单窗口设计(全局状态 + 一次 sapp_run) —— 多窗口必须换平台层。
+26: *   所以"去标题栏 / 挪窗口 / 置顶 / 居中"这些【单窗口】行为不必换后端。
+---
+17

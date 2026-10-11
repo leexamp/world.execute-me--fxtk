@@ -54,3 +54,25 @@ your_app/libfxtk*.so
 your_app/dist/
 demo-main/test/v25_showcase
 demo-main/test/v25_evidence
+
+# ===== MV 出片工作区（world.execute(me); 复刻）=====
+# 只入库源码/文档/脚本/小图；下列大体积媒体与本地环境一律排除。
+# 音频（原曲）与成片（mp4）不入库，见 mv/pv/CREDITS.md 与 mv/pv/out/REPO_README.md。
+/mv/.venv/
+/mv/audio/
+/mv/record/.venv/
+/mv/pv/audio/
+/mv/pv/footage/
+/mv/pv/build*/
+/mv/pv/out/*.mp4
+/mv/pv/out/*.mov
+/mv/pv/out/*.mkv
+# 大图（>=5MB）与中间素材
+/mv/pv/assets/bg/
+# 本地依赖/缓存/编译产物
+/mv/pv/web/node_modules/
+__pycache__/
+node_modules/
+*.qcow2
+/mv/pv/lyric_app/lyric_sim
+/mv/pv/rt_sim/fxtk_rt_sim

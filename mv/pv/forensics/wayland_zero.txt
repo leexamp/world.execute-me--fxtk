@@ -1,0 +1,3 @@
+$ grep -ci wayland third_party/sokol/sokol_app.h; grep -ci wayland third_party/sokol/sokol_gfx.h
+0
+0

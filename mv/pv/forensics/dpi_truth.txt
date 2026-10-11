@@ -1,0 +1,14 @@
+$ echo '【她的三个需求 → 我的三条真实回答】'; echo; echo '1) 多窗口管理:'; grep -n '多窗口' components/fxtk/fxtk_desktop.h | head -2; echo; echo '2) 去除标题栏:'; grep -n 'mutter' CHANGELOG.md | head -2; echo; echo '3) 灵活布局:'; grep -n 'fx_flex_apply' components/fxtk/fxtk.h | head -2
+【她的三个需求 → 我的三条真实回答】
+
+1) 多窗口管理:
+22: * 【为什么这些能做, 而"多窗口"不能】
+23: *   sokol_app 是单窗口设计(全局状态 + 一次 sapp_run) —— 多窗口必须换平台层。
+
+2) 去除标题栏:
+19:- **实测结论（本机 GNOME Shell/mutter + XWayland 1920×1080，装饰高 38px）**：
+28:- **去标题栏那条不是本模块的 bug**：mutter 走客户端装饰，就是不认 motif hints。
+
+3) 灵活布局:
+110:#define FX_POS_FLEX  4   /* v2.5: 坐标由 fx_flex_apply 写入, 布局期不重算 */
+444: *     fx_flex_apply_simple(panel, FX_FLEX_ROW, 8, 6,

@@ -1,0 +1,3 @@
+$ grep -n "圆弧\|不支持\|A/a" components/fxtk/fxtk_svg.c | head -5
+27: * 【不支持(不装做支持)】
+28: *   ✗ 圆弧指令 A/a 与平滑曲线 S/s T/t  (需要贝塞尔/椭圆弧求交, 本版没做)
