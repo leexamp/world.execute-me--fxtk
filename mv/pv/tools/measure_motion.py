@@ -1,7 +1,9 @@
 import glob, os, sys, numpy as np
 from PIL import Image
 rows=[]
-for d in sorted(glob.glob('/media/user/Data/fxtk-pc/mv/pv/footage/frames/*/')):
+import os as _os
+_root=_os.path.join(_os.path.dirname(_os.path.abspath(__file__)),'..','footage','frames')
+for d in sorted(glob.glob(_os.path.join(_root,'*')+_os.sep)):
     fs=sorted(glob.glob(d+'*.jpg'))
     if len(fs)<10: continue
     prev=None; dup=0; diffs=[]

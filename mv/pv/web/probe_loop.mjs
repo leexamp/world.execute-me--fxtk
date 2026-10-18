@@ -5,7 +5,7 @@ import { chromium } from 'playwright-core';
 import os from 'os';
 import fs from 'fs';
 const EXE = os.homedir() + '/.cache/ms-playwright/chromium-1148/chrome-linux/chrome';
-const A = JSON.parse(fs.readFileSync('/media/user/Data/fxtk-pc/mv/pv/web/assets.json', 'utf8'));
+const A = JSON.parse(fs.readFileSync(new URL('./assets.json', import.meta.url), 'utf8'));
 const LY = A.lyrics, LYOFF = 4.99;
 function lineT0(tm) { let k = LY[0].t0; for (const l of LY) if (tm >= l.t0) k = l.t0; return k; }
 function expect(t) {

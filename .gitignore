@@ -76,3 +76,18 @@ node_modules/
 *.qcow2
 /mv/pv/lyric_app/lyric_sim
 /mv/pv/rt_sim/fxtk_rt_sim
+
+# 个人隐私 / 临时目录 (不入库)
+.Trash-0/
+.wineprefix/
+.dev_archive/
+.workbuddy/
+mv/1.heic
+mv/pv/out/v2.5_*.png
+mv/pv/out/v2.5_*.mp4
+
+mv/pv/incoming/chatlog*
+mv/pv/v2/single/movie
+mv/pv/v2/single/*.exe
+mv/pv/v2/single/mini70
+mv/pv/v2/single/txtbg

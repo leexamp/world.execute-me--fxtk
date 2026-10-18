@@ -165,10 +165,10 @@
     <div id="d-oc"><div class="tb">OpenCode<div class="tb2"><span id="d-cost">0 tok - 0%</span><svg id="oc-ring" width="22" height="22"><circle cx="11" cy="11" r="8.5" fill="none" stroke="#e0e1e5" stroke-width="2.4"></circle><circle id="d-arc" cx="11" cy="11" r="8.5" fill="none" stroke="#5f6368" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="53.4" stroke-dashoffset="0"></circle></svg></div></div>
       <div class="tabs"><i>&#9776;</i><i>&#9638;</i><i>&#9679; linux-sim 主程序代码优化 &times;</i><i style="color:#5f6368">&#9633; esp32-tester重写为fxtk-esp32</i><i style="color:#5f6368">新建会话</i></div>
       <div class="bd" id="d-chat"></div></div>
-    <div id="d-term"><div class="tb">user@user-laptop-ubuntu: ~</div><div class="bd" id="d-log"></div></div>
+    <div id="d-term"><div class="tb">fxtk@device: ~</div><div class="bd" id="d-log"></div></div>
   </div>
   <!-- 常驻 chrome -->
-  <div id="top"><div class="l"><span class="grn">user@user-laptop-ubuntu</span><span class="dim">:~$</span> <span class="wht b" id="cmd">./world.execute(me);</span></div>
+  <div id="top"><div class="l"><span class="grn">fxtk@device</span><span class="dim">:~$</span> <span class="wht b" id="cmd">./world.execute(me);</span></div>
     <div class="r"><span id="t-time">00:00.0 / 03:32</span></div></div>
   <div id="logzone"><div id="logcol"><div id="gitfeed"><div id="gitin"></div></div><div id="log"><div id="login"></div></div></div><div id="artbox"><pre id="art"></pre></div></div>
   <div id="ribbon">
@@ -179,7 +179,7 @@
     <div id="rb-bar"><i id="rb-fill"></i></div><div id="rb-tot"></div>
   </div>
   <div id="win"><div class="wt">
-      <span class="t" id="w-title">WORLD.EXECUTE{ME};</span><span id="w-host">user@user-laptop-ubuntu:~</span>
+      <span class="t" id="w-title">WORLD.EXECUTE{ME};</span><span id="w-host">fxtk@device:~</span>
       <span class="st"><span id="wq"><svg width="20" height="20"><circle cx="10" cy="10" r="7.6" fill="none" stroke="#232a31" stroke-width="2.2"></circle><circle id="w-arc" cx="10" cy="10" r="7.6" fill="none" stroke="#ff7b72" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="47.8" stroke-dashoffset="0"></circle></svg><span class="q" id="w-cost">0 tok - 0%</span></span><span id="w-sect">01 / BOOT</span><span id="w-time">00:00.0 / 03:32</span><span class="grn">RUNNING</span></span></div>
     <div class="wb">
       <div id="chatpane"><div id="chat"></div><div id="chat-cur">you@here:<span id="cc">_</span></div></div>
@@ -775,7 +775,7 @@ function gitFeed(){
 }
 function logFeed(){
   /* 八块按 4 行一组轮转交织 —— 像好几个终端同时在刷; "报错 + 修复"成对放在偶数下标上, 不会被拆开 */
-  const P='user@user-laptop-ubuntu:~$ ', REAL=[], APT=[], PIP=[], BUILD=[], ERRS=[], IDF=[], TEST=[], REND=[];
+  const P='fxtk@device:~$ ', REAL=[], APT=[], PIP=[], BUILD=[], ERRS=[], IDF=[], TEST=[], REND=[];
   const put=function(a,c,s){ a.push({c:c,s:s}); };
   /* ---- [real] 本项目真跑过的(07 取回原版 / 08 录屏 / 10-11 取证 / 20 出片) ---- */
   put(REAL,'p',P+'bash mv/pv/scripts/07_restore_rt.sh');
@@ -1343,7 +1343,7 @@ function coldOpen(t){
   if(WIN) WIN.style.display='none';
   if(!COLD){ COLD=document.createElement('div'); COLD.id='cold';
     COLD.style.cssText='position:absolute;inset:0;z-index:200;background:#05070a;color:#c9d1d9;font-family:inherit';
-    COLD.innerHTML='<div id="c-top" style="position:absolute;left:24px;top:14px;font-size:20px;color:#7ee787">user@user-laptop-ubuntu:~$</div>'+
+    COLD.innerHTML='<div id="c-top" style="position:absolute;left:24px;top:14px;font-size:20px;color:#7ee787">fxtk@device:~$</div>'+
       '<div id="c-t" style="position:absolute;right:24px;top:14px;font-size:20px;color:#8b949e"></div>'+
       '<div id="c-q" style="position:absolute;left:0;right:0;top:42%;text-align:center;font-size:44px;color:#e6edf3"></div>'+
       '<div id="c-a" style="position:absolute;left:0;right:0;top:54%;text-align:center;font-size:26px;color:#7ee787"></div>'+
@@ -1484,7 +1484,7 @@ function fmt(t){ const m=Math.floor(t/60), s=t-m*60; return pad(m)+':'+(s<10?'0'
   if(A.beats&&A.beats.period) PERIOD=A.beats.period;
   D('wall').src=A.bg||'../assets/bg/warty-final-ubuntu.png';
   D('d-chat').innerHTML='<b>linux-sim 主程序代码优化</b><br><br>你好，我在。<br><br>先看看 <b>fxtk.h</b> 的核心接口，确认这次的改动不会破坏它：<br><br>fx_driver_t 只有 9 个成员 —— 换屏就是换一个结构体。<br><br>编译通过（fxtk.c 的警告在核心库，不在本次范围）。<br><br>现在总结 linux_sim 里的优化点：<br>1. 字体加载循环是坏的（第一个 break 就退出，后面路径永远走不到）<br>2. font_loaded 永远为 1，检查毫无意义<br>3. 可以简化成直接调用 <b>fxtk_font_init</b><br><br>另外 —— 你说最早那版只有 ESP 代码？我从 git 历史里取出来了，48c2ef9，逐文件 sha1 核对一致。<br><br>正在给它补一层 PC 模拟器：SPI 直写换成内存帧缓冲，GT911 换成鼠标。<br><br>库和 UI 一行都不会改。<br><br>三个页面已经跑起来了：波形 / 图形 / 控件。<br><br>滑杆后面那串影子我也复现了，是 cec3b00 之前的脏区问题。<br><br>接下来按你的分镜一页一页来。';
-  D('d-log').textContent='user@user-laptop-ubuntu:~$ ./world.execute\(me\);\n[ OK ] fxtk_sim 480x272 online\n[ OK ] fxtk-rt@48c2ef9 restored (24 files)\n[ OK ] sha1 verified: fxtk.c fxtk_draw.c fxtk_widgets.c cn_gray.c\n[ OK ] sim_driver.c built -> fxtk_rt_sim\n[ OK ] xdotool: pages / slider / keypad\n[ OK ] rt_orig_pages.mp4  360 frames\n[ OK ] rt_orig_ui.mp4  420 frames\n[ OK ] git: 216 commits  2026-08-07 -> 2026-10-10\n[ OK ] worktrees: v1.0 v2.0 v2.1 v2.2 v2.3 v2.4\n[ OK ] bench 1280x720  68-74 fps\n[WARN] ttyUSB0 not found\n[ OK ] git log v1.0..v2.3  39 commits (12 条 Add files via upload)\n[ OK ] recon: v1.0->v2.3 展示层重建 16 条 · 标 [recon] · 未改写仓库历史\n[WARN] sapp_dpi_scale() = 1.000\n';
+  D('d-log').textContent='fxtk@device:~$ ./world.execute\(me\);\n[ OK ] fxtk_sim 480x272 online\n[ OK ] fxtk-rt@48c2ef9 restored (24 files)\n[ OK ] sha1 verified: fxtk.c fxtk_draw.c fxtk_widgets.c cn_gray.c\n[ OK ] sim_driver.c built -> fxtk_rt_sim\n[ OK ] xdotool: pages / slider / keypad\n[ OK ] rt_orig_pages.mp4  360 frames\n[ OK ] rt_orig_ui.mp4  420 frames\n[ OK ] git: 216 commits  2026-08-07 -> 2026-10-10\n[ OK ] worktrees: v1.0 v2.0 v2.1 v2.2 v2.3 v2.4\n[ OK ] bench 1280x720  68-74 fps\n[WARN] ttyUSB0 not found\n[ OK ] git log v1.0..v2.3  39 commits (12 条 Add files via upload)\n[ OK ] recon: v1.0->v2.3 展示层重建 16 条 · 标 [recon] · 未改写仓库历史\n[WARN] sapp_dpi_scale() = 1.000\n';
   ['powerline','protection','pieces','creation'].forEach(preloadScene);
   /* 映射表自检(一次): 覆盖率 100% / 单调不减 / 与关键词+填充规则重算的结果一致 */
   try{ window.sceneMapAudit=sceneMapAudit(); const _a=window.sceneMapAudit;

@@ -116,3 +116,15 @@
 ## 成片获取 / Where is the film
 
 成片 world_execute_me_1080p.mp4 约 **243MB**，超出普通 Git 仓库的合理体积，**未纳入版本管理**。建议通过 **GitHub Releases** 单独上传发布（或按「如何复现」自行渲染）；**不要**用 git add 直接提交视频。
+
+## 地址
+
+- 渲染器 fxtk：https://github.com/leexamp/fxtk-pc
+- 本作 MV 仓库：https://github.com/leexamp/world.execute-me--fxtk
+
+## 制作 / Credits
+
+fxtk 的 PC 端实现，大部分由 DeepSeek 编写。整支 MV 也由 DeepSeek 完成：场景还原、终端与 git 叙事、歌词逐句对齐、角色动效、逐帧渲染与成片编码。人负责提需求、审画面、挑毛病。
+
+- 渲染器内核 fxtk：https://github.com/leexamp/fxtk-pc （PC 端实现大部分由 DeepSeek 编写）
+- 本作 MV 仓库：https://github.com/leexamp/world.execute-me--fxtk
