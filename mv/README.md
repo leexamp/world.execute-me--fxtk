@@ -4,9 +4,9 @@
 > **用途**：把一支 MV 交给**另一个专门的 AI** 去做，这里放它需要的全部前置条件。
 
 > **当前状态（2026-10，v2.5 已交付）**
-> - 成片：\`pv/out/world_execute_me_final_1080p.mp4\`（1920×1080 / 60fps / 3:40，片尾含项目地址与声明）
-> - v2.5 单程序（桌面 6 真实窗口 MV）：[\`pv/v2/single/\`](pv/v2/single/) —— \`movie.c\` + \`script.inc\` + [BUILD.md](pv/v2/single/BUILD.md) + [MAINTENANCE.md](pv/v2/single/MAINTENANCE.md)
-> - 仓库拆分：MV 在本仓库 \`feat/v2.5\`；框架改动在 \`leexamp/fxtk-pc\` 的 \`feat/multi-window\`（**不含 mv**）
+> - 成片：`pv/out/world_execute_me_final_1080p.mp4`（1920×1080 / 60fps / 3:40，片尾含项目地址与声明）
+> - v2.5 单程序（桌面 6 真实窗口 MV）：[`pv/v2/single/`](pv/v2/single/) —— `movie.c` + `script.inc` + [BUILD.md](pv/v2/single/BUILD.md) + [MAINTENANCE.md](pv/v2/single/MAINTENANCE.md)
+> - 仓库拆分：MV 在本仓库 `feat/v2.5`；框架改动在 `leexamp/fxtk-pc` 的 `feat/multi-window`（**不含 mv**）
 > - 下面的 PTC 流程是 v1（web MV）的历史工作方式；v2.5 的编译/运行/维护请看上面两个文档。
 
 ---
