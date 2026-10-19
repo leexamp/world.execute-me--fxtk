@@ -21,26 +21,40 @@
 
 依赖 fxtk 仓库本体（`components/fxtk`、`drivers`、`third_party/sokol`）。
 
-### Linux（在 fxtk-pc 仓库根目录）
+> **注意** `components/fxtk/fxtk_font.c` 是 SDL2 字体实现；MV 用的是 `drivers/fxtk_font_stb.c`，
+> 两者不能同时编进来。因此源文件**显式列出**，不要用 `components/fxtk/*.c`。
 
-    gcc -DFXTK_MW -O2 mv/pv/v2/single/movie.c \
-        drivers/fxtk_sokol_mw.c drivers/fxtk_sokol_driver.c \
-        drivers/fxtk_font_stb.c drivers/fxtk_win.c components/fxtk/*.c \
+公共核心源（下称 `CORE`）：
+
+    CORE="components/fxtk/fxtk.c components/fxtk/fxtk_draw.c components/fxtk/fxtk_widgets.c \
+          components/fxtk/fxtk_extra.c components/fxtk/fxtk_effects.c components/fxtk/fxtk_backends.c \
+          components/fxtk/fxtk_gesture.c components/fxtk/fxtk_par.c components/fxtk/fxtk_flex.c \
+          components/fxtk/fxtk_svg.c"
+
+### Linux（仓库根目录；发布用 `-Os`）
+
+    gcc -DFXTK_MW -Os -ffunction-sections -fdata-sections -Wl,--gc-sections -s \
         -Icomponents/fxtk -Idrivers -Ithird_party/sokol \
+        mv/pv/v2/single/movie.c drivers/fxtk_sokol_mw.c drivers/fxtk_sokol_driver.c \
+        drivers/fxtk_font_stb.c drivers/fxtk_win.c $CORE \
         -o mv/pv/v2/single/movie \
         -lX11 -lXi -lXcursor -lGL -ldl -lpthread -lm
 
 ### Windows（MinGW-w64；Linux 上交叉编译）
 
-    x86_64-w64-mingw32-gcc -DFXTK_MW -DSOKOL_GLCORE -O2 \
-        mv/pv/v2/single/movie.c \
-        drivers/fxtk_sokol_mw.c drivers/fxtk_sokol_driver.c \
-        drivers/fxtk_font_stb.c drivers/fxtk_win.c components/fxtk/*.c \
+    x86_64-w64-mingw32-gcc -DFXTK_MW -Os -Wl,--gc-sections -s \
         -Icomponents/fxtk -Idrivers -Ithird_party/sokol \
+        mv/pv/v2/single/movie.c drivers/fxtk_sokol_mw.c drivers/fxtk_sokol_driver.c \
+        drivers/fxtk_font_stb.c drivers/fxtk_win.c $CORE \
         -o mv/pv/v2/single/world_execute_me.exe \
         -lopengl32 -lgdi32 -luser32 -lole32 -loleaut32 -luuid -lshell32 -lwinmm -mwindows
 
-Windows 本机用 MinGW 编译时命令相同（去掉 `x86_64-w64-mingw32-` 前缀、路径换本机）。
+- `SOKOL_GLCORE` 由 `drivers/fxtk_sokol_driver.c` 内部定义，命令行不用再加。
+- **MinGW 坑**：Windows 侧不要加 `-ffunction-sections -fdata-sections`——与 `-s` 组合会产出
+  约 17 MB 的未剥离产物（实测），只用 `-Wl,--gc-sections` 即可。
+- 体积（v2.5 发布版，`-Os` + 上述精简）：Linux **318,320 B**、Windows **514,560 B**；
+  对比 `-O2`：759,096 B / 1,125,128 B。
+- 调试构建：把 `-Os` 换成 `-O2`、去掉 `-s` 即可。
 
 ## 运行
 

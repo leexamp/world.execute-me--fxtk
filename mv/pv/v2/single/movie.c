@@ -19,6 +19,7 @@
 #endif
 #include "fxtk.h"
 #include "fxtk_win.h"
+#include "fxtk_mw.h"
 #include "script.inc"
 #define NSCR ((int)(sizeof(SCR)/sizeof(SCR[0])))
 
@@ -1535,7 +1536,7 @@ int main(int argc,char**argv)
 #else
             char cmd[640];
             snprintf(cmd,sizeof cmd,"ffplay -nodisp -autoexit -loglevel quiet \"%s\" >/dev/null 2>&1 &",ap);
-            system(cmd);
+            { int sys_rc = system(cmd); (void)sys_rc; }
 #endif
         }
     }
