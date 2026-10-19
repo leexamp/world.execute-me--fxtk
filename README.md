@@ -1,11 +1,11 @@
-# fxtk — 轻量GUI框架 (v2.4)
+# fxtk — 轻量GUI框架 (v2.5)
 
 > ## 📖 ENGLISH VERSION AVAILABLE AT [docs_en/README_en.md](docs_en/README_en.md)
 >
 > **[→ Read this README in English](docs_en/README_en.md)**
 
 <p>
-  <img alt="version" src="https://img.shields.io/badge/version-v2.4-blue">
+  <img alt="version" src="https://img.shields.io/badge/version-v2.5-blue">
   <img alt="license" src="https://img.shields.io/badge/license-MIT-green">
   <img alt="c" src="https://img.shields.io/badge/language-C99-9cf">
   <img alt="platform" src="https://img.shields.io/badge/platform-Linux%20%7C%20Windows%20%7C%20ESP32-lightgrey">
@@ -51,6 +51,21 @@
   **CI 里会跑**，但用 `GOLDEN_TOL=1` 并跳过依赖 SDL/字体版本差异的演示页——即 CI 上不是逐像素口径。
 - **能改得动**：所有控件的颜色/圆角/留白集中在 `fxtk_tokens.h`，换风格只改一个文件。
 
+## v2.5 新增
+
+- **多真实窗口后端（实验性，独立编译开关 `-DFXTK_MW`）**：一个进程 / 一个 GL 上下文 / N 个原生窗口，
+  Windows WGL + Linux GLX；应用只依赖 `fxtk_win.h`；详见 [docs/multi-window.md](docs/multi-window.md)。
+  默认单窗口路径与产物体积不受影响（未引用时链接器剥掉）。
+- **单窗口桌面行为**：`fx_win_*`（置顶/无边框/移动/居中/拖拽）+ 可回查的 `fx_win_get_decorated`；
+  边界与实测见 CHANGELOG v2.5。
+- **SVG 子集 → canvas**：解析与绘制分离 + 61 项无头自检。
+- **弹性布局**：`FX_POS_FLEX` + `fx_flex_apply`（ROW/COLUMN，2640 组随机穷举自检）。
+- **单指触摸手势**、**高 DPI 修正**（high_dpi + 按逻辑宽缩放配对）。
+- **颜色/混合**：`FX_RGBA(r,g,b,a)`、`fx_color_alpha()`；24 位老颜色 alpha=0 仍视为不透明；
+  `FX_TEXT_NOBG` 让文字背景透明。
+- **控件 z 序**：`fxtk_unlink / fxtk_raise / fxtk_lower`；`fxtk_draw_get_driver()` 供后端/调试查询。
+- 驱动：`CMD_MAX` 8192→65536（复杂帧不再静默丢绘制）；多窗口驱动按窗口尺寸缓存画布/帧缓冲。
+
 ## v2.4 新增
 
 - **默认后端换成 sokol**(OpenGL), SDL2 降为遗留对照。因此 Windows 版是**单 exe、无第三方 DLL**;
@@ -68,6 +83,20 @@
   截图 `fx_screenshot()` 走驱动的 `read_pixels`, 零外部依赖。
 - 注意:控件层 SDF 抗锯齿**默认开启**(`s_widget_aa = 1`);要对比或排查观感用 `fx_set_widget_aa(0/1/2)`
   —— 它在"画布 + 文字 + quadwarp 混排"场景下有一个已知缺陷正在修(详见 CHANGELOG v2.4.1)。
+
+## v2.5 多真实窗口（实验性，独立分支 `feat/multi-window`）
+
+- **一个进程、一个 GL 上下文、N 个原生窗口**：应用只依赖 `fxtk_win.h`，Windows 走 WGL、Linux 走 GLX；
+  后端在 `drivers/fxtk_sokol_mw.c`，单窗口 sokol_app 路径**不受影响**（未引用时链接器会剥掉）。
+- 应用侧 API：`fxtk_win_create / create_ex(borderless) / show / raise / move / resize / title / begin / end /
+  width / height / poll / quit / time`，以及 `fxtk_win_screen()`（屏幕尺寸，用于把 1280×720 舞台
+  等比缩放/居中）与 `fxtk_win_client_offset()`（Win32 标题栏偏移补偿，X11 返回 0）。
+- 每窗口独立画布/帧缓冲（按尺寸缓存，24 槽）；关闭 vsync（多窗口串行 Swap 会互相等垂直同步）；
+  窗口事件走原生 API（Win32 消息 / X11 `XNextEvent`）；UTF-8 标题（Win32 W 版 API / X11 `_NET_WM_NAME`）。
+- 已知边界（如实写）：**X11 only、主屏、最大 8 窗口、鼠标/键盘事件尚未转发给 fxtk 控件层、
+  真 HiDPI 未验证**。
+- 文档：[docs/multi-window.md](docs/multi-window.md)。参考实现：MV 仓库 `mv/pv/v2/single/`
+  （6 窗口、81 句画面、全片 212s）。
 
 ## 已知限制
 
@@ -196,6 +225,7 @@ cd demo-main && make package     # 或 ../tools/package_release.sh
 - [docs/examples.md](docs/examples.md) — 示例导读
 - [docs/internals.md](docs/internals.md) — 内部机制（面向源码修改）
 - [docs/windows.md](docs/windows.md) — Windows 编译
+- [docs/multi-window.md](docs/multi-window.md) — 多真实窗口后端（FXTK_MW）
 
 ## 许可
 
