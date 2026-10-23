@@ -17,7 +17,18 @@
 | `MAINTENANCE.md` | 维护/二次开发：数据表、动画、后端、坑位、QA、成片合成、发布 |
 | `movie` / `world_execute_me.exe` | 构建产物（不入库，本地保留） |
 
-## 编译
+## 编译（一键）
+
+在 `mv/pv/v2/single/` 目录：
+
+    make            # Linux -> ./movie
+    make win        # Windows -> world_execute_me.exe  (需 mingw-w64)
+    make run
+
+参数与体积：Linux 用 `-Os + gc-sections + strip`（约 318KB）；Windows 用 `-Os + gc-sections + strip`（约 515KB）。
+手工/交叉编译细节与源清单见下面「手工编译」。
+
+## 手工编译
 
 依赖 fxtk 仓库本体（`components/fxtk`、`drivers`、`third_party/sokol`）。
 
